@@ -7,8 +7,10 @@ using NETCore.Basic.Services.DataServices;
 using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Util.Crypto;
+using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NETCore.Basic.Services
@@ -18,6 +20,9 @@ namespace NETCore.Basic.Services
         public void BindServices(IServiceCollection services)
         {
             services.AddScoped<IRepository<User>, UsersRepository>();
+
+            services.AddScoped<IFileHandler<string>, HTMLHandler>();
+            services.AddScoped<IFileHandler<Stream>, FileHandler>();
 
             services.AddSingleton<IHashing, Hashing>();
             services.AddSingleton<IEncryption, Encryption>();
@@ -32,6 +37,21 @@ namespace NETCore.Basic.Services
             services.AddTransient<IUserServices, UserServices>();
             services.AddTransient<IMapping, UserMapping>();
 
+
+            #region Exemplifing case of multiple interface implementation GOTO UsersController for more.
+            //services.AddTransient<Func<EMappingType, IMapping>>(serviceProvider => key =>
+            //{
+            //    switch (key)
+            //    {
+            //        case EMappingType.Example:
+            //            return serviceProvider.GetService<ExampleMapping>();
+            //        case EMappingType.User:
+            //            return serviceProvider.GetService<UserMapping>();
+            //        default:
+            //            return null;
+            //    }
+            //});
+            #endregion
         }
     }
 }
