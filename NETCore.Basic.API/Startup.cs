@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NETCore.Basic.Repository.DataContext;
+using NETCore.Basic.Services;
+using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using System;
@@ -28,7 +31,7 @@ namespace NETCore.Basic.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Repository.DataContext.Context>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ConnectionString")));
+            services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
@@ -39,10 +42,12 @@ namespace NETCore.Basic.API
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services.AddSingleton<IHashing, Hashing>();
-            services.AddSingleton<IEncryption, Encryption>();
+            ServicesBinding binding = new ServicesBinding();
+            binding.BindServices(services);
+            var maps = new List<IMapping>();
 
-            services.Configure<ConfigurationKeys>(Configuration.GetSection("ConfiguratonKeys"));
+            Mapper autoMapperMaps = new Mapper(services, maps);
+            autoMapperMaps.Map();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

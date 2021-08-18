@@ -9,25 +9,21 @@ using System.Text;
 
 namespace NETCore.Basic.Repository.DataContext
 {
-    public class Context : DbContext
+    public class NetDbContext : DbContext
     {
-        private IConfiguration _configuration { get; }
-        public Context()
+        public NetDbContext()
+        {}
+        public NetDbContext(DbContextOptions options) : base(options)
         {
-
-        }
-        public Context(DbContextOptions options) : base(options)
-        {
-
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.EnableDetailedErrors(true);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserDataConfiguration());
-            builder.Entity<User>().ToTable("TbUsuarios");
         }
         public DbSet<User> Users { get; set; }
     }

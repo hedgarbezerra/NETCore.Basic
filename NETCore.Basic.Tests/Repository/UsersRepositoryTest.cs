@@ -12,15 +12,15 @@ namespace NETCore.Basic.Tests.Repository
     [TestFixture]
     public class UsersRepositoryTest
     {
-        private Context _context;
+        private NetDbContext _context;
         [SetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<Context>()
+            var options = new DbContextOptionsBuilder<NetDbContext>()
             .UseInMemoryDatabase(databaseName: "Test")
             .Options;
 
-            _context = new Context(options);
+            _context = new NetDbContext(options);
             _context.Users.Add(new User { Id = 1, Name = "Movie 1" });
             _context.Users.Add(new User { Id = 2, Name = "Movie 2" });
             _context.Users.Add(new User { Id = 3, Name = "Movie 3" });

@@ -1,4 +1,5 @@
-﻿using NETCore.Basic.Util.Helper;
+﻿using Microsoft.Extensions.Configuration;
+using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,20 +10,32 @@ using System.Text;
 
 namespace NETCore.Basic.Util.Crypto
 {
+    public interface IEncryption
+    {
+        string Encrypt(string plainText);
+        byte[] Encrypt(byte[] plainTextBytes);
+        string Decrypt(string cipherText);
+        byte[] Decrypt(byte[] cipherTextBytesWithSaltAndIv, out int decryptedByteCount);
+    }
     /// <summary>
     /// Classe estática voltada a encriptação
     /// </summary>
-    public static class Encryption
+    public class Encryption : IEncryption
     {
+        public Encryption(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         private const int _keySize = 256;
         private const int _derivationIterations = 1000;
-        private static ConfigurationKeys _configurationKeys = new ConfigurationKeys();
+        public IConfiguration _configuration { get; }
+
         /// <summary>
         /// Utiliza o método de sobrecarga com mesmo nome para encriptar um texto a partir de uma string
         /// </summary>
         /// <param name="plainText">Qualquer texto/string que deva ser encriptado</param>
         /// <returns>string com texto encriptografado</returns>
-        public static string Encrypt(string plainText)
+        public string Encrypt(string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
 
@@ -36,12 +49,12 @@ namespace NETCore.Basic.Util.Crypto
         /// </summary>
         /// <param name="plainTextBytes"></param>
         /// <returns>byte array do texto encriptografado</returns>
-        public static byte[] Encrypt(byte[] plainTextBytes)
+        public byte[] Encrypt(byte[] plainTextBytes)
         {
             var saltStringBytes = Generate256BitsOfRandomEntropy();
             var ivStringBytes = Generate256BitsOfRandomEntropy();
 
-            string encryptionKey = _configurationKeys.Encryption;
+            string encryptionKey = _configuration.GetSection("ConfiguratonKeys")["Encryption"];
 
             using (var password = new Rfc2898DeriveBytes(encryptionKey, saltStringBytes, _derivationIterations))
             {
@@ -79,7 +92,7 @@ namespace NETCore.Basic.Util.Crypto
         /// </summary>
         /// <param name="cipherText">O texto encriptado pelo sistema</param>
         /// <returns>string com texto descriptografado</returns>
-        public static string Decrypt(string cipherText)
+        public string Decrypt(string cipherText)
         {
             var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(cipherText);
 
@@ -95,13 +108,10 @@ namespace NETCore.Basic.Util.Crypto
         /// <param name="cipherTextBytesWithSaltAndIv">recebe o byte array criptografado</param>
         /// <param name="decryptedByteCount">Parâmetro de saída decryptedByteCount com quantidade de bytes da operação</param>
         /// <returns>byte array do texto criptografado</returns>
-        public static byte[] Decrypt(byte[] cipherTextBytesWithSaltAndIv, out int decryptedByteCount)
+        public byte[] Decrypt(byte[] cipherTextBytesWithSaltAndIv, out int decryptedByteCount)
         {
-            // Get the saltbytes by extracting the first 32 bytes from the supplied cipherText bytes.
             var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(_keySize / 8).ToArray();
-            // Get the IV bytes by extracting the next 32 bytes from the supplied cipherText bytes.
             var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(_keySize / 8).Take(_keySize / 8).ToArray();
-            // Get the actual cipher text bytes by removing the first 64 bytes from the cipherText string.
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((_keySize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((_keySize / 8) * 2)).ToArray();
 
             string encryptionKey = ConfigurationManager.AppSettings["encryptionKey"];
@@ -139,12 +149,11 @@ namespace NETCore.Basic.Util.Crypto
         /// Método privado prove um byte array aleatório para criptografia
         /// </summary>
         /// <returns>retorna um byte array de 256 bits aleatório</returns>
-        private static byte[] Generate256BitsOfRandomEntropy()
+        private byte[] Generate256BitsOfRandomEntropy()
         {
-            var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
+            var randomBytes = new byte[32];
             using (var rngCsp = new RNGCryptoServiceProvider())
             {
-                // Fill the array with cryptographically secure random bytes.
                 rngCsp.GetBytes(randomBytes);
             }
             return randomBytes;

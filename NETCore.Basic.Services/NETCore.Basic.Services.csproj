@@ -4,4 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NETCore.Basic.Domain\NETCore.Basic.Domain.csproj" />
+    <ProjectReference Include="..\NETCore.Basic.Repository\NETCore.Basic.Repository.csproj" />
+    <ProjectReference Include="..\NETCore.Basic.Util\NETCore.Basic.Util.csproj" />
+  </ItemGroup>
+
 </Project>

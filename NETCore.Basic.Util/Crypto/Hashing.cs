@@ -5,22 +5,27 @@ using System.Text;
 
 namespace NETCore.Basic.Util.Crypto
 {
+    public interface IHashing
+    {
+        string ComputeHash(string plainText, byte[] saltBytes = null);
+        bool VerifyHash(string plainText, string hashValue);
+    }
     /// <summary>
     /// Classe estática com métodos de geração e comparação de hashes que utilizam salt bytes
     /// </summary>
-    public static class Hashing
+    public class Hashing : IHashing
     {
+        private readonly RNGCryptoServiceProvider _rngProvider = new RNGCryptoServiceProvider();
         /// <summary>
         /// provedor do serviço de criptografia e hashing
         /// </summary>
-        private static readonly RNGCryptoServiceProvider rngProvider = new RNGCryptoServiceProvider();
         /// <summary>
         /// Método que retorna uma string hasheada a partir de criptografia de 256 bits com salt, sendo impossível a descriptografia
         /// </summary>
         /// <param name="plainText">string com texto limpo</param>
         /// <param name="saltBytes">salt bytes opcionais, caso não seja preenchido será gerado</param>
         /// <returns>string a partir do parâmetro plainText hasheada com salt inserido ou gerado</returns>
-        public static string ComputeHash(string plainText, byte[] saltBytes = null)
+        public string ComputeHash(string plainText, byte[] saltBytes = null)
         {
             if (saltBytes == null)
             {
@@ -33,7 +38,7 @@ namespace NETCore.Basic.Util.Crypto
                 saltBytes = new byte[saltSize];
 
 
-                rngProvider.GetNonZeroBytes(saltBytes);
+                _rngProvider.GetNonZeroBytes(saltBytes);
             }
 
             byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
@@ -72,7 +77,7 @@ namespace NETCore.Basic.Util.Crypto
         /// <param name="plainText">texto limpo sem qualquer criptografia</param>
         /// <param name="hashValue">texto gerado pelo método de hash do sistema</param>
         /// <returns>retorna um boolean com a validação dos byte arrays gerados</returns>
-        public static bool VerifyHash(string plainText,
+        public bool VerifyHash(string plainText,
                                       string hashValue)
         {
             byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
@@ -101,13 +106,13 @@ namespace NETCore.Basic.Util.Crypto
         /// </summary>
         /// <param name="tamanhoString">int com o tamanho desejado da string</param>
         /// <returns>string aleatória utilizando letras, caracteres especiais e números</returns>
-        public static string RandomString(int tamanhoString = 8)
+        public string RandomString(int tamanhoString = 8)
         {
             char[] chars = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%&".ToCharArray();
 
             byte[] data = new byte[4 * tamanhoString];
 
-            rngProvider.GetBytes(data);
+            _rngProvider.GetBytes(data);
 
             StringBuilder result = new StringBuilder(tamanhoString);
 

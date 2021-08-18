@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NETCore.Basic.Domain.Interfaces;
+using NETCore.Basic.Repository.DataContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace NETCore.Basic.Repository.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T> where T : class
     {
-        public DbContext _dbContext;
-        public BaseRepository(DbContext context)
+        public NetDbContext _dbContext;
+        public BaseRepository(NetDbContext context)
         {
             _dbContext = context;
         }
@@ -30,7 +31,6 @@ namespace NETCore.Basic.Repository.Repositories
         public IQueryable<T> Get(Expression<Func<T, bool>> filter = null)
         {
             var dados = _dbContext.Set<T>().AsQueryable();
-
             return filter != null ? dados.Where(filter) : dados;
         }
 
@@ -53,7 +53,6 @@ namespace NETCore.Basic.Repository.Repositories
         public T Update(T obj)
         {
             _dbContext.Entry(obj).State = EntityState.Modified;
-
             return _dbContext.Update(obj).Entity;
         }
     }

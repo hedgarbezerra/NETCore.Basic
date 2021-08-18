@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
+using NETCore.Basic.Repository.DataContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace NETCore.Basic.Repository.Repositories
 {
     public class UsersRepository : BaseRepository<User>
     {
-        public UsersRepository(DbContext context)
+        public UsersRepository(NetDbContext context)
             :base(context)
         {
         }
