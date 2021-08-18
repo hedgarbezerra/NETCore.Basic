@@ -10,19 +10,17 @@ namespace NETCore.Basic.Services.Mapping
 {
     public interface IClassMapper
     {
-        void Map();
+        void Map(IServiceCollection services);
     }
     public sealed class Mapper : IClassMapper
     {
-        public IServiceCollection _services { get; }
         public IEnumerable<IMapping> _maps { get; }
-        public Mapper(IServiceCollection services, IEnumerable<IMapping> maps)
+        public Mapper(IEnumerable<IMapping> maps)
         {
-            _services = services;
             _maps = maps;
         }
 
-        public void Map()
+        public void Map(IServiceCollection services)
         {
             var config = new MapperConfiguration(cfg =>
             {
@@ -34,7 +32,7 @@ namespace NETCore.Basic.Services.Mapping
 
             IMapper mapper = config.CreateMapper();
 
-            _services.AddSingleton(mapper);
+            services.AddSingleton(mapper);
         }
     }
 }

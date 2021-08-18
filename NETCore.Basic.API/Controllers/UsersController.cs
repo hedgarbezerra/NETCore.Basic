@@ -4,6 +4,8 @@ using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
+using NETCore.Basic.Services.DataServices;
+using NETCore.Basic.Services.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +20,30 @@ namespace NETCore.Basic.API.Controllers
     {
         public IRepository<User> _repository { get; }
         public IMapper _mapper { get; }
+        public IUriService _uriService { get; }
 
-        public UsersController(IRepository<User> repository, IMapper mapper)
+        public UsersController(IRepository<User> repository, IMapper mapper, IUriService uriService)
         {
             _repository = repository;
             _mapper = mapper;
+            _uriService = uriService;
         }
 
         [HttpGet]
         [Route("filter")]
-        [ProducesResponseType(typeof(OutputUser), 200)]
+        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
-            return Ok(new PaginatedList<User>(_repository.Get(), query.PageIndex, query.PageSize));
+            var result = _repository.Get();
+            var route = Request.Path.Value;
+            var paginatedList = new PaginatedList<User>(result, _uriService,route, query.PageIndex, query.PageSize);
+
+            if (paginatedList.TotalCount <= 0)
+                return NotFound();
+
+            return Ok(paginatedList);
         }
 
         [HttpGet]
@@ -40,9 +51,13 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(OutputUser), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult GetById([FromQuery]int Id)
+        public IActionResult GetById(int Id)
         {
-            return Ok(_repository.Get(Id));
+            var userCtx = _repository.Get(Id);
+            if (userCtx == null)
+                return NoContent();
+            var mappedUser = _mapper.Map<OutputUser>(userCtx);
+            return Ok(mappedUser);
         }
 
         [HttpGet]
@@ -50,7 +65,7 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(OutputUser), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Get([FromQuery] int userId)
+        public IActionResult Get(int userId)
         {
             return Ok(_repository.Get(userId).Email);
         }
@@ -64,7 +79,9 @@ namespace NETCore.Basic.API.Controllers
         {
             var mappedUser = _mapper.Map<User>(user);
 
-            return Ok(_repository.Add(mappedUser));
+            var userCtx = _repository.Add(mappedUser);
+            _repository.SaveChanges();
+            return CreatedAtAction(nameof(UsersController), userCtx);
         }
     }
 }

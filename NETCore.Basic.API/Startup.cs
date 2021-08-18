@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NETCore.Basic.API
@@ -31,23 +32,30 @@ namespace NETCore.Basic.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
+                    ops.JsonSerializerOptions.IgnoreReadOnlyProperties = false;
+                    ops.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     ops.JsonSerializerOptions.IgnoreNullValues = false;
                     ops.JsonSerializerOptions.WriteIndented = true;
                     ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                    ops.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             ServicesBinding binding = new ServicesBinding();
             binding.BindServices(services);
-            var maps = new List<IMapping>();
 
-            Mapper autoMapperMaps = new Mapper(services, maps);
-            autoMapperMaps.Map();
+            var maps = new List<IMapping>()
+            { 
+                new UserMapping()
+            };
+            Mapper autoMapperMaps = new Mapper(maps);
+            autoMapperMaps.Map(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
