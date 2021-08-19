@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
@@ -6,8 +7,10 @@ using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.DataServices;
 using NETCore.Basic.Services.Pagination;
+using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,12 +24,16 @@ namespace NETCore.Basic.API.Controllers
         public IRepository<User> _repository { get; }
         public IMapper _mapper { get; }
         public IUriService _uriService { get; }
+        public ILocalFileHandler _fileHandler { get; }
+        public IHTMLHandler _htmlHandler { get; }
 
-        public UsersController(IRepository<User> repository, IMapper mapper, IUriService uriService)
+        public UsersController(IRepository<User> repository, IMapper mapper, IUriService uriService, ILocalFileHandler fileHandler, IHTMLHandler htmlHandler)
         {
             _repository = repository;
             _mapper = mapper;
             _uriService = uriService;
+            _fileHandler = fileHandler;
+            _htmlHandler = htmlHandler;
         }
 
         [HttpGet]
@@ -83,5 +90,111 @@ namespace NETCore.Basic.API.Controllers
             _repository.SaveChanges();
             return CreatedAtAction(nameof(UsersController), userCtx);
         }
+
+        [HttpGet]
+        [Route("delete")]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult DeleteFolder([FromQuery]string path)
+        {
+            try
+            {
+                _fileHandler.DeleteFolder(path);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        [HttpGet]
+        [Route("readfile")]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult ReadFile([FromQuery] string path)
+        {
+            try
+            {
+                var arquivo = _fileHandler.Read(path, out Stream fileStream);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        [HttpGet]
+        [Route("writefile")]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult WriteFile([FromQuery] string from, string to)
+        {
+            try
+            {
+                var arquivo = _fileHandler.Read(from, out Stream fileStream);
+                _fileHandler.Write(fileStream,to, "teste_2.html");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet]
+        [Route("readhtml")]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult ReadHtml([FromQuery] string path)
+        {
+            try
+            {
+                var sucesso = _htmlHandler.Read(path, out HtmlDocument htmlDocument);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        [HttpGet]
+        [Route("writehtml")]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult WriteHtml([FromQuery] string path)
+        {
+            try
+            {
+                var fakeHtml = @"<!DOCTYPE html>
+                                    <html lang='pt-br'>
+                                    <head>
+                                        <meta charset='UTF-8'>
+                                        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+                                        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                                        <title>DOC</title>
+                                    </head>
+                                    <body>
+                                        <p>Teste</p>
+                                        <div class='ok'>
+                                            <p>OK</p>
+                                        </div>
+                                    </body>
+                                    </html>";
+                var html = new HtmlDocument();
+                html.LoadHtml(fakeHtml);
+                var sucesso = _htmlHandler.Write(html, path, "teste_2.html");
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
     }
 }

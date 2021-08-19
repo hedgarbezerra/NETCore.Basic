@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
@@ -21,8 +22,10 @@ namespace NETCore.Basic.Services
         {
             services.AddScoped<IRepository<User>, UsersRepository>();
 
-            services.AddScoped<IFileHandler<string>, HTMLHandler>();
+            services.AddScoped<IFileHandler<HtmlDocument>, HTMLHandler>();
             services.AddScoped<IFileHandler<Stream>, FileHandler>();
+            services.AddScoped<IHTMLHandler, HTMLHandler>();
+            services.AddScoped<ILocalFileHandler, FileHandler>();
 
             services.AddSingleton<IHashing, Hashing>();
             services.AddSingleton<IEncryption, Encryption>();

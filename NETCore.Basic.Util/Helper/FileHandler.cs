@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NETCore.Basic.Util.Helper
@@ -19,64 +20,107 @@ namespace NETCore.Basic.Util.Helper
             try
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
-
-                foreach (FileInfo file in directoryInfo.EnumerateFiles())
-                {
-                    file.Delete();
-                }
-
-                return Read(path, out Stream outFile);
+                DeleteInnerFolder(directoryInfo);
+               
+                return true;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 return false;
             }
         }
+        private void DeleteInnerFolder(DirectoryInfo directory)
+        {
+            if (directory == null) return;
 
+            DeleteFolderFiles(directory);
+
+            foreach (var dir in directory.EnumerateDirectories())
+            {
+                DeleteInnerFolder(dir);
+            }
+            directory.Delete();
+        }
+        private void DeleteFolderFiles(DirectoryInfo directory)
+        {
+            foreach (FileInfo file in directory.EnumerateFiles())
+            {
+                file.Delete();
+            }
+        }
         public bool Delete(string path)
         {
             try
             {
+                DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
-                return true;
+                var file = directoryInfo.EnumerateFiles().Where(c => c.FullName == path).SingleOrDefault();
+                file.Delete();
+
+                return Read(path, out Stream outFile);
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
         }
         public bool Read(string path, out Stream file)
         {
-            file = new MemoryStream();
+            file = null;
+            bool existeArquivo = File.Exists(path);
+            if (!existeArquivo) return false;
+
             try
             {
-
+                var bytes = File.ReadAllBytes(path);
+                file = new MemoryStream(bytes);
+                //using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                //{
+                //    byte[] bytes = new byte[file.Length];
+                //    file.Read(bytes, 0, (int)file.Length);
+                //    file.Write(bytes, 0, bytes.Length);
+                //}
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 return false;
             }
         }
-        public bool Write(Stream file, string path)
+        public bool Write(Stream file, string path, string fileName)
         {
             try
             {
+                var bytes = ByteArrayFromFile(file);
+                File.WriteAllBytes($@"{path}\\{fileName}", bytes);
+
+                //using (FileStream fileStream = new FileStream($@"{path}\\{fileName}", FileMode.Create))
+                //{
+                //    file.CopyTo(fileStream);
+                //}
 
                 return true;
             }
-            catch (Exception ex)
+            catch(Exception e)
             {
                 return false;
             }
         }
 
-        private byte[] ByteArrayFromStream(Stream stream)
+        private byte[] ByteArrayFromFile(Stream stream)
         {
-            using (MemoryStream ms = new MemoryStream())
+            //MemoryStream ms = new MemoryStream();
+
+            //var tempStream = stream as MemoryStream;
+            //var byteArray = tempStream.ToArray();
+            //ms.Write(byteArray, 0, byteArray.Length);
+
+            //return ms.ToArray();
+
+            using (MemoryStream file = new MemoryStream())
             {
-                stream.CopyTo(ms);
-                return ms.ToArray();
+                stream.CopyTo(file);
+                return file.ToArray();
             }
         }
         private static void StreamFromBytes(byte[] bytes, Stream s)

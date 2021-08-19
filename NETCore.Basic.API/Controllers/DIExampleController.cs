@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NETCore.Basic.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/exempleclass1")]
     [ApiController]
     public class DIExampleController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace NETCore.Basic.API.Controllers
         }
     }
 
-    [Route("api/[controller]2")]
+    [Route("api/exempleclass2")]
     [ApiController]
     public class DIExample2Controller : ControllerBase
     {
@@ -32,5 +32,17 @@ namespace NETCore.Basic.API.Controllers
                 return servic != null;
             }).SingleOrDefault();
         }
+    }
+
+    [Route("api/exempleclass3")]
+    [ApiController]
+    public class DIExample3Controller : ControllerBase
+    {
+        private IMapping _mapping;
+        public DIExample3Controller(IServiceProvider serviceProvider)
+        {
+            _mapping = (ExampleMapping)serviceProvider.GetService (typeof(IMapping));
+        }
+
     }
 }

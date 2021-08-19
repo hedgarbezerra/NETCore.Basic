@@ -1,4 +1,5 @@
-﻿using NETCore.Basic.Domain.Interfaces;
+﻿using HtmlAgilityPack;
+using NETCore.Basic.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,30 +7,35 @@ using System.Text;
 
 namespace NETCore.Basic.Util.Helper
 {
-    public interface IHTMLHandler : IFileHandler<string>
+    public interface IHTMLHandler : IFileHandler<HtmlDocument>
     {
 
     }
     public class HTMLHandler : IHTMLHandler
     {
-        public bool Read(string path, out string html)
+        public bool Read(string path, out HtmlDocument html)
         {
-            var existeArquivo = File.Exists(path);
-            html = "";
+            bool existeArquivo = File.Exists(path);
+            html = new HtmlDocument();
             if (existeArquivo)
             {
-
-                if (existeArquivo)
-                    html = File.ReadAllText(path);
+                html.Load(path, Encoding.UTF8);
 
                 return true;
             }
             return false;
         }
 
-        public bool Write(string html, string path)
+        public bool Write(HtmlDocument html, string path, string fileName)
         {
-            throw new NotImplementedException();
+            string fullPath = $@"{path}\{fileName}";
+            bool existeArquivo = File.Exists(fullPath);
+
+            if (existeArquivo) return false;
+
+            html.Save(fullPath);
+
+            return true;
         }
     }
 }
