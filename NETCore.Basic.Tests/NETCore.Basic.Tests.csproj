@@ -19,13 +19,4 @@
     <ProjectReference Include="..\NETCore.Basic.Repository\NETCore.Basic.Repository.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Mapping\" />
-    <Folder Include="Services\DataServices\" />
-    <Folder Include="Services\Pagination\" />
-    <Folder Include="Services\Validators\" />
-    <Folder Include="Util\Crypto\" />
-    <Folder Include="Util\Helper\" />
-  </ItemGroup>
-
 </Project>

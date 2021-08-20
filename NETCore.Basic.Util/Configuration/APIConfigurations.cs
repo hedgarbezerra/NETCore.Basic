@@ -7,7 +7,6 @@ namespace NETCore.Basic.Util.Configuration
     {
         public string ConnectionString { get; }
         public string CryptoKey { get; }
-        public string HashingKey { get; }
         public string LoggingTable { get; }
     }
     public class APIConfigurations : IAPIConfigurations
@@ -17,8 +16,6 @@ namespace NETCore.Basic.Util.Configuration
         public string ConnectionString => _configuration.GetConnectionString("MainString");
 
         public string CryptoKey => _configuration.GetSection("ConfiguratonKeys")["Encryption"] ?? string.Empty;
-
-        public string HashingKey => _configuration.GetSection("ConfiguratonKeys")["Hashing"] ?? string.Empty;
 
         public string LoggingTable => _configuration.GetSection("Logging")["Table"] ?? string.Empty;
 

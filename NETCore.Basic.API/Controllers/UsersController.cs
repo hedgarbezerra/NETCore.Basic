@@ -37,30 +37,6 @@ namespace NETCore.Basic.API.Controllers
             _encryption = encryption;
         }
 
-        [Route("crypto")]
-        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Crypto()
-        {
-            var msg = "oi sou hedgar";
-            var encryptedMsg = _encryption.Encrypt(msg);
-            return Ok(encryptedMsg);
-        }
-
-        [HttpGet]
-        [Route("decrypt")]
-        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Decrypt()
-        {
-            var msg = "oi sou hedgar";
-            var encryptedMsg = _encryption.Encrypt(msg);
-            var decryptedMsg = _encryption.Decrypt(encryptedMsg);
-            return Ok(decryptedMsg);
-        }
-
         /// <summary>
         /// Paginated response for user list along with HATEOAS
         /// </summary>
