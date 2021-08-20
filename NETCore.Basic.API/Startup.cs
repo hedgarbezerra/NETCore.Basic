@@ -12,8 +12,12 @@ using NETCore.Basic.Services;
 using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
+using Serilog;
+using Serilog.Context;
+using Serilog.Sinks.MSSqlServer;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -35,7 +39,6 @@ namespace NETCore.Basic.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            //services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
@@ -51,7 +54,6 @@ namespace NETCore.Basic.API
 
             ServicesBinding binding = new ServicesBinding(_apiConfigurations);
             binding.BindServices(services);
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -60,6 +62,17 @@ namespace NETCore.Basic.API
             {
                 app.UseDeveloperExceptionPage();
             }
+#pragma warning disable CS0618
+            Log.Logger = new LoggerConfiguration()
+                        .Enrich.FromLogContext()
+                        .WriteTo.MSSqlServer(_apiConfigurations.ConnectionString,
+                        autoCreateSqlTable: true,
+                        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
+                        appConfiguration: Configuration,
+                        tableName: _apiConfigurations.LoggingTable)
+                        // Example .WriteTo.File("logs\\meuLogapp.txt", rollingInterval: RollingInterval.Minute)
+                        .CreateLogger();
+#pragma warning restore CS0618 
 
             app.UseHttpsRedirection();
 
@@ -71,6 +84,15 @@ namespace NETCore.Basic.API
             {
                 endpoints.MapControllers();
             });
+
+
+            //Adding a customColumn to Logger
+            //app.Use(async (httpContext, next) =>
+            //{
+            //    var userName = httpContext.User.Identity.IsAuthenticated ? httpContext.User.Identity.Name : string.Empty;
+            //    LogContext.PushProperty("Username", userName);
+            //    await next.Invoke();
+            //});
         }
     }
 }

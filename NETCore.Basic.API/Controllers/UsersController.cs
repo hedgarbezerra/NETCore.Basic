@@ -10,6 +10,7 @@ using NETCore.Basic.Services.DataServices;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,12 +70,15 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
+            Log.Information("##Starting Log");
+
             var route = Request.Path.Value;
             var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
 
             if (paginatedList.TotalCount <= 0)
                 return NotFound();
 
+            Log.Information("##Finishing Log");
             return Ok(paginatedList);
         }
 
