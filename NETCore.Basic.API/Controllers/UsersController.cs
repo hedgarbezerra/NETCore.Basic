@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation.Results;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
@@ -7,6 +8,7 @@ using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.DataServices;
 using NETCore.Basic.Services.Pagination;
+using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
@@ -21,19 +23,43 @@ namespace NETCore.Basic.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        public IRepository<User> _repository { get; }
+        public IUserServices _userService { get; }
         public IMapper _mapper { get; }
         public IUriService _uriService { get; }
+        public IHashing _hash { get; }
         public ILocalFileHandler _fileHandler { get; }
-        public IHTMLHandler _htmlHandler { get; }
+        public IFileHandler<HtmlDocument> _htmlHandler { get; }
+        public IEncryption _encryption { get; }
 
-        public UsersController(IRepository<User> repository, IMapper mapper, IUriService uriService, ILocalFileHandler fileHandler, IHTMLHandler htmlHandler)
+        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IEncryption encryption)
         {
-            _repository = repository;
+            _userService = userService;
             _mapper = mapper;
             _uriService = uriService;
-            _fileHandler = fileHandler;
-            _htmlHandler = htmlHandler;
+            _encryption = encryption;
+        }
+
+        [Route("crypto")]
+        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Crypto()
+        {
+            var msg = "oi sou hedgar";
+            var encryptedMsg = _encryption.Encrypt(msg);
+            return Ok(encryptedMsg);
+        }
+        [HttpGet]
+        [Route("decrypt")]
+        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Decrypt()
+        {
+            var msg = "oi sou hedgar";
+            var encryptedMsg = _encryption.Encrypt(msg);
+            var decryptedMsg = _encryption.Decrypt(encryptedMsg);
+            return Ok(decryptedMsg);
         }
 
         [HttpGet]
@@ -43,9 +69,8 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
-            var result = _repository.Get();
             var route = Request.Path.Value;
-            var paginatedList = new PaginatedList<User>(result, _uriService,route, query.PageIndex, query.PageSize);
+            var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
 
             if (paginatedList.TotalCount <= 0)
                 return NotFound();
@@ -60,7 +85,7 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult GetById(int Id)
         {
-            var userCtx = _repository.Get(Id);
+            var userCtx = _userService.Get(Id);
             if (userCtx == null)
                 return NoContent();
             var mappedUser = _mapper.Map<OutputUser>(userCtx);
@@ -74,7 +99,7 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get(int userId)
         {
-            return Ok(_repository.Get(userId).Email);
+            return Ok(_userService.Get(userId).Email);
         }
 
         [HttpPost]
@@ -86,9 +111,11 @@ namespace NETCore.Basic.API.Controllers
         {
             var mappedUser = _mapper.Map<User>(user);
 
-            var userCtx = _repository.Add(mappedUser);
-            _repository.SaveChanges();
-            return CreatedAtAction(nameof(UsersController), userCtx);
+            var success = _userService.Add(mappedUser, out List<ValidationFailure> errors);
+            if (success)
+                return CreatedAtAction(nameof(Post), success);
+            else
+                return StatusCode(500, errors.Select(err => err.ErrorMessage));
         }
 
         [HttpGet]
@@ -108,93 +135,5 @@ namespace NETCore.Basic.API.Controllers
                 return StatusCode(500, ex);
             }
         }
-        [HttpGet]
-        [Route("readfile")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult ReadFile([FromQuery] string path)
-        {
-            try
-            {
-                var arquivo = _fileHandler.Read(path, out Stream fileStream);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-        [HttpGet]
-        [Route("writefile")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult WriteFile([FromQuery] string from, string to)
-        {
-            try
-            {
-                var arquivo = _fileHandler.Read(from, out Stream fileStream);
-                _fileHandler.Write(fileStream,to, "teste_2.html");
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        [HttpGet]
-        [Route("readhtml")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult ReadHtml([FromQuery] string path)
-        {
-            try
-            {
-                var sucesso = _htmlHandler.Read(path, out HtmlDocument htmlDocument);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-        [HttpGet]
-        [Route("writehtml")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult WriteHtml([FromQuery] string path)
-        {
-            try
-            {
-                var fakeHtml = @"<!DOCTYPE html>
-                                    <html lang='pt-br'>
-                                    <head>
-                                        <meta charset='UTF-8'>
-                                        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-                                        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                                        <title>DOC</title>
-                                    </head>
-                                    <body>
-                                        <p>Teste</p>
-                                        <div class='ok'>
-                                            <p>OK</p>
-                                        </div>
-                                    </body>
-                                    </html>";
-                var html = new HtmlDocument();
-                html.LoadHtml(fakeHtml);
-                var sucesso = _htmlHandler.Write(html, path, "teste_2.html");
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
     }
 }

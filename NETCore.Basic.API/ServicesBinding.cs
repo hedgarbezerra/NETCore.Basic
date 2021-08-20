@@ -1,12 +1,15 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
+using NETCore.Basic.Repository.DataContext;
 using NETCore.Basic.Repository.Repositories;
 using NETCore.Basic.Services.DataServices;
 using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Services.Pagination;
+using NETCore.Basic.Services.Validation;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using System;
@@ -14,19 +17,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace NETCore.Basic.Services
+namespace NETCore.Basic.API
 {
     public sealed class ServicesBinding
     {
+        public ServicesBinding(IAPIConfigurations config)
+        {
+            _config = config;
+        }
+        public IAPIConfigurations _config { get; }
+
         public void BindServices(IServiceCollection services)
         {
+            #region Repositories
+            services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(_config.ConnectionString));
             services.AddScoped<IRepository<User>, UsersRepository>();
 
+            #endregion
+
+            #region Services
+            services.AddTransient<IUserServices, UserServices>();
+
+            #endregion
+
+            #region Helpers
             services.AddScoped<IFileHandler<HtmlDocument>, HTMLHandler>();
             services.AddScoped<IFileHandler<Stream>, FileHandler>();
             services.AddScoped<IHTMLHandler, HTMLHandler>();
             services.AddScoped<ILocalFileHandler, FileHandler>();
-
             services.AddSingleton<IHashing, Hashing>();
             services.AddSingleton<IEncryption, Encryption>();
             services.AddSingleton<IUriService>(o =>
@@ -37,8 +55,27 @@ namespace NETCore.Basic.Services
                 return new UriService(uri);
             });
 
-            services.AddTransient<IUserServices, UserServices>();
+            #endregion
+
+            #region Mapping
+            //Always add all IMapping implementations before
             services.AddTransient<IMapping, UserMapping>();
+
+            var maps = new List<IMapping>()
+            {
+                new UserMapping()
+            };
+            Mapper autoMapper = new Mapper(maps);
+            autoMapper.Map(services);
+
+            #endregion
+
+            #region Validators
+            services.AddTransient<IValidator<User>, UserValidation>();
+
+            #endregion
+
+            services.AddTransient<IAPIConfigurations, APIConfigurations>();
 
 
             #region Exemplifing case of multiple interface implementation GOTO UsersController for more.

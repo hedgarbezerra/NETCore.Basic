@@ -77,8 +77,7 @@ namespace NETCore.Basic.Util.Crypto
         /// <param name="plainText">texto limpo sem qualquer criptografia</param>
         /// <param name="hashValue">texto gerado pelo método de hash do sistema</param>
         /// <returns>retorna um boolean com a validação dos byte arrays gerados</returns>
-        public bool VerifyHash(string plainText,
-                                      string hashValue)
+        public bool VerifyHash(string plainText, string hashValue)
         {
             byte[] hashWithSaltBytes = Convert.FromBase64String(hashValue);
 

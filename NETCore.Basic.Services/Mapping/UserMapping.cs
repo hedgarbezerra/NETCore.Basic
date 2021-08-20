@@ -12,6 +12,7 @@ namespace NETCore.Basic.Services.Mapping
         public void Map(IMapperConfigurationExpression config)
         {
             config.CreateMap<User, InputUser>();
+            config.CreateMap<InputUser, User>();
             config.CreateMap<OutputUser, User>();
             config.CreateMap<User, OutputUser>();
         }

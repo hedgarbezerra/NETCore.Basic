@@ -19,8 +19,8 @@ namespace NETCore.Basic.Services.Pagination
         }
         public Uri GetPageUri(int pageIndex, int pageSize, string route)
         {
-            var _enpointUri = new Uri(string.Concat(_baseUri, route));
-            var modifiedUri = QueryHelpers.AddQueryString(_enpointUri.ToString(), "pageIndex", pageIndex.ToString());
+            var _endpointUri = new Uri(string.Concat(_baseUri, route));
+            var modifiedUri = QueryHelpers.AddQueryString(_endpointUri.ToString(), "pageIndex", pageIndex.ToString());
             modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pageSize.ToString());
             return new Uri(modifiedUri);
         }

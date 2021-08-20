@@ -23,9 +23,11 @@ namespace NETCore.Basic.API
 {
     public class Startup
     {
+        private readonly APIConfigurations _apiConfigurations;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _apiConfigurations = new APIConfigurations(configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -33,7 +35,7 @@ namespace NETCore.Basic.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
+            //services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
@@ -47,15 +49,9 @@ namespace NETCore.Basic.API
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            ServicesBinding binding = new ServicesBinding();
+            ServicesBinding binding = new ServicesBinding(_apiConfigurations);
             binding.BindServices(services);
 
-            var maps = new List<IMapping>()
-            { 
-                new UserMapping()
-            };
-            Mapper autoMapperMaps = new Mapper(maps);
-            autoMapperMaps.Map(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
