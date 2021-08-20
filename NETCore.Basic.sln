@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.Domain", "NETCore.Basic.Domain\NETCore.Basic.Domain.csproj", "{EE7A32B1-B833-4E40-A1E6-A49BA7AF2C14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.Domain", "NETCore.Basic.Domain\NETCore.Basic.Domain.csproj", "{EE7A32B1-B833-4E40-A1E6-A49BA7AF2C14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.Repository", "NETCore.Basic.Repository\NETCore.Basic.Repository.csproj", "{799A74B3-CAEE-490F-B0C0-9589D648136F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.Repository", "NETCore.Basic.Repository\NETCore.Basic.Repository.csproj", "{799A74B3-CAEE-490F-B0C0-9589D648136F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.API", "NETCore.Basic.API\NETCore.Basic.API.csproj", "{0C6B20A3-CEAD-4F25-8D0A-B02D8D79E358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.API", "NETCore.Basic.API\NETCore.Basic.API.csproj", "{0C6B20A3-CEAD-4F25-8D0A-B02D8D79E358}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.Util", "NETCore.Basic.Util\NETCore.Basic.Util.csproj", "{1D63E314-E11B-43A8-95A8-E9341F764105}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.Util", "NETCore.Basic.Util\NETCore.Basic.Util.csproj", "{1D63E314-E11B-43A8-95A8-E9341F764105}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.Services", "NETCore.Basic.Services\NETCore.Basic.Services.csproj", "{C7983D0A-11E5-4636-BF60-5F0034361EE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.Services", "NETCore.Basic.Services\NETCore.Basic.Services.csproj", "{C7983D0A-11E5-4636-BF60-5F0034361EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETCore.Basic.Tests", "NETCore.Basic.Tests\NETCore.Basic.Tests.csproj", "{C77DA374-FBBB-40FB-A1A3-7EB6D5235C0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.Basic.Tests", "NETCore.Basic.Tests\NETCore.Basic.Tests.csproj", "{C77DA374-FBBB-40FB-A1A3-7EB6D5235C0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{73DD953E-A28D-417F-AB67-F9DC05FFAB2C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

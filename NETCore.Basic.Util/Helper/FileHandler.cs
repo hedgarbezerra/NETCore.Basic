@@ -10,6 +10,7 @@ namespace NETCore.Basic.Util.Helper
     public interface ILocalFileHandler : IFileHandler<Stream>
     {
         bool Delete(string path);
+        bool Delete(FileInfo file);
         bool DeleteFolder(string path);
 
     }
@@ -24,7 +25,7 @@ namespace NETCore.Basic.Util.Helper
                
                 return true;
             }
-            catch(Exception ex)
+            catch
             {
                 return false;
             }
@@ -52,12 +53,11 @@ namespace NETCore.Basic.Util.Helper
         {
             try
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                FileInfo file = new FileInfo(path);
 
-                var file = directoryInfo.EnumerateFiles().Where(c => c.FullName == path).SingleOrDefault();
                 file.Delete();
 
-                return Read(path, out Stream outFile);
+                return !Read(path, out Stream outFile);
             }
             catch
             {
@@ -82,7 +82,7 @@ namespace NETCore.Basic.Util.Helper
                 //}
                 return true;
             }
-            catch (Exception e)
+            catch 
             {
                 return false;
             }
@@ -101,7 +101,7 @@ namespace NETCore.Basic.Util.Helper
 
                 return true;
             }
-            catch(Exception e)
+            catch
             {
                 return false;
             }
@@ -131,6 +131,17 @@ namespace NETCore.Basic.Util.Helper
             }
         }
         private static Stream StreamFromBytes(byte[] bytes) => new MemoryStream(bytes);
-
+        public bool Delete(FileInfo file)
+        {
+            try
+            {
+                file.Delete();
+                return !Read(file.FullName, out Stream outFile);
+            }
+            catch 
+            {
+                return false;
+            }
+        }
     }
 }

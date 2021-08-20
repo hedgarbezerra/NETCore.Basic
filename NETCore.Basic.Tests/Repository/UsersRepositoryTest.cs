@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Repository.DataContext;
+using NETCore.Basic.Util.Configuration;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,7 @@ namespace NETCore.Basic.Tests.Repository
             .UseInMemoryDatabase(databaseName: "Test")
             .Options;
 
-            _context = new NetDbContext(options);
+            _context = new NetDbContext(options, new Mock<IAPIConfigurations>().Object);
             _context.Users.Add(new User { Id = 1, Name = "Movie 1" });
             _context.Users.Add(new User { Id = 2, Name = "Movie 2" });
             _context.Users.Add(new User { Id = 3, Name = "Movie 3" });

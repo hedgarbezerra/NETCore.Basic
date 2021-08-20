@@ -6,7 +6,7 @@ using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
-using NETCore.Basic.Services.DataServices;
+using NETCore.Basic.Services.Data;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
@@ -27,9 +27,6 @@ namespace NETCore.Basic.API.Controllers
         public IUserServices _userService { get; }
         public IMapper _mapper { get; }
         public IUriService _uriService { get; }
-        public IHashing _hash { get; }
-        public ILocalFileHandler _fileHandler { get; }
-        public IFileHandler<HtmlDocument> _htmlHandler { get; }
         public IEncryption _encryption { get; }
 
         public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IEncryption encryption)
@@ -50,6 +47,7 @@ namespace NETCore.Basic.API.Controllers
             var encryptedMsg = _encryption.Encrypt(msg);
             return Ok(encryptedMsg);
         }
+
         [HttpGet]
         [Route("decrypt")]
         [ProducesResponseType(typeof(PaginatedList<User>), 200)]
@@ -63,27 +61,29 @@ namespace NETCore.Basic.API.Controllers
             return Ok(decryptedMsg);
         }
 
+        /// <summary>
+        /// Paginated response for user list along with HATEOAS
+        /// </summary>
+        /// <param name="query">Receives pageIndex and pageSize</param>
+        /// <returns>Paged object with list of Users</returns>
         [HttpGet]
-        [Route("filter")]
-        [ProducesResponseType(typeof(PaginatedList<User>), 200)]
+        [Route("get")]
+        [ProducesResponseType(typeof(PaginatedList<OutputUser>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
-            Log.Information("##Starting Log");
-
             var route = Request.Path.Value;
             var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
 
             if (paginatedList.TotalCount <= 0)
                 return NotFound();
 
-            Log.Information("##Finishing Log");
             return Ok(paginatedList);
         }
 
         [HttpGet]
-        [Route("filter/{Id}")]
+        [Route("get/{Id}")]
         [ProducesResponseType(typeof(OutputUser), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
@@ -97,7 +97,7 @@ namespace NETCore.Basic.API.Controllers
         }
 
         [HttpGet]
-        [Route("filter/{userId}/mail")]
+        [Route("get/{userId}/mail")]
         [ProducesResponseType(typeof(OutputUser), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
@@ -122,22 +122,5 @@ namespace NETCore.Basic.API.Controllers
                 return StatusCode(500, errors.Select(err => err.ErrorMessage));
         }
 
-        [HttpGet]
-        [Route("delete")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult DeleteFolder([FromQuery]string path)
-        {
-            try
-            {
-                _fileHandler.DeleteFolder(path);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
     }
 }

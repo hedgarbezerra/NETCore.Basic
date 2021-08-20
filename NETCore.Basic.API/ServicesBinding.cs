@@ -6,10 +6,11 @@ using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Repository.DataContext;
 using NETCore.Basic.Repository.Repositories;
-using NETCore.Basic.Services.DataServices;
+using NETCore.Basic.Services.Data;
 using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Services.Validation;
+using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using System;
@@ -32,11 +33,13 @@ namespace NETCore.Basic.API
             #region Repositories
             services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(_config.ConnectionString));
             services.AddScoped<IRepository<User>, UsersRepository>();
+            services.AddScoped<IRepository<EventLog>, LogRepository>();
 
             #endregion
 
             #region Services
             services.AddTransient<IUserServices, UserServices>();
+            services.AddTransient<ILoggingService, LoggingService>();
 
             #endregion
 

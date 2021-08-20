@@ -2,12 +2,10 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NETCore.Basic.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Repository.DataContext.Configuration
 {
-    public class UserDataConfiguration : DataConfiguration<User>
+    public sealed class UserDataConfiguration : DataConfiguration<User>
     {
         protected override void ConfigurateFields(EntityTypeBuilder<User> builder)
         {
@@ -37,7 +35,6 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
 
             builder.Property(c => c.RegistredAt)
                 .HasColumnType("datetime")
-                .HasDefaultValue(DateTime.Now)
                 .IsRequired();
 
         }
