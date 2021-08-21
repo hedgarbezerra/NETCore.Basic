@@ -12,6 +12,8 @@ namespace NETCore.Basic.Util.Helper
         bool Delete(string path);
         bool Delete(FileInfo file);
         bool DeleteFolder(string path);
+        byte[] ByteArrayFromFile(Stream stream);
+        Stream StreamFromBytes(byte[] bytes);
 
     }
     public class FileHandler : ILocalFileHandler
@@ -107,7 +109,7 @@ namespace NETCore.Basic.Util.Helper
             }
         }
 
-        private byte[] ByteArrayFromFile(Stream stream)
+        public byte[] ByteArrayFromFile(Stream stream)
         {
             //MemoryStream ms = new MemoryStream();
 
@@ -123,14 +125,7 @@ namespace NETCore.Basic.Util.Helper
                 return file.ToArray();
             }
         }
-        private static void StreamFromBytes(byte[] bytes, Stream s)
-        {
-            using (var writer = new BinaryWriter(s))
-            {
-                writer.Write(bytes);
-            }
-        }
-        private static Stream StreamFromBytes(byte[] bytes) => new MemoryStream(bytes);
+        public Stream StreamFromBytes(byte[] bytes) => new MemoryStream(bytes);
         public bool Delete(FileInfo file)
         {
             try

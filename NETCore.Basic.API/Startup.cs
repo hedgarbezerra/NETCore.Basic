@@ -34,13 +34,14 @@ namespace NETCore.Basic.API
     public class Startup
     {
         private readonly APIConfigurations _apiConfigurations;
+        public IConfiguration Configuration { get; }
+        public IEncryption _encryption { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             _apiConfigurations = new APIConfigurations(configuration);
         }
-
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -55,23 +56,24 @@ namespace NETCore.Basic.API
                     ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    ops.JsonSerializerOptions.MaxDepth = 64; //max
+                    ops.JsonSerializerOptions.MaxDepth = 64; 
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddDirectoryBrowser();
 
-            ServicesBinding binding = new ServicesBinding(_apiConfigurations);
+            ServicesBinding binding = new ServicesBinding(_apiConfigurations, Configuration);
             binding.BindServices(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             #region Setting up exception handling
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
             }
             else
             {
@@ -85,6 +87,10 @@ namespace NETCore.Basic.API
 
                     await context.Response.WriteAsync(result);
                 }));
+
+                var builder = new ConfigurationBuilder()
+                    .AddAzureKeyVault(Configuration["AZR_KV_URI"], Configuration["AZR_KV_KEY"], Configuration["AZR_KV_SECRET"]);
+                builder.Build();
             }
             #endregion
 
@@ -93,11 +99,11 @@ namespace NETCore.Basic.API
 
             Log.Logger = new LoggerConfiguration()
                        .Enrich.FromLogContext()
-                       .WriteTo.MSSqlServer(_apiConfigurations.ConnectionString,
+                       .WriteTo.MSSqlServer(Configuration["SQLCONNSTR_DEFAULT"],
                        autoCreateSqlTable: true,
                        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
                        appConfiguration: Configuration,
-                       tableName: _apiConfigurations.LoggingTable)
+                       tableName: Configuration["Logging:Table"])
                        .CreateLogger();
 
             app.UseStaticFiles(new StaticFileOptions
@@ -138,7 +144,9 @@ namespace NETCore.Basic.API
             //  .WriteTo.File(new RenderedCompactJsonFormatter(), env.WebRootPath+ "\\logs\\log.json")
 
             #endregion
-
+            //var builder = new ConfigurationBuilder()
+            //    .AddEnvironmentVariables("AZR_")
+                
         }
     }
 }
