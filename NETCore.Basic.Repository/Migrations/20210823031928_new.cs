@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NETCore.Basic.Repository.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class @new : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.CreateTable(
                 name: "TbUsuarios",
                 columns: table => new
@@ -17,7 +18,8 @@ namespace NETCore.Basic.Repository.Migrations
                     Username = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false),
                     Password = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false),
                     Email = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
-                    RegistredAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2021, 8, 18, 0, 52, 32, 452, DateTimeKind.Local).AddTicks(9215))
+                    Role = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    RegistredAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,6 +29,7 @@ namespace NETCore.Basic.Repository.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.DropTable(
                 name: "TbUsuarios");
         }

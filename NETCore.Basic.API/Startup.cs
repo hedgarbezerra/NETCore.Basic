@@ -106,10 +106,12 @@ namespace NETCore.Basic.API
             Log.Logger = new LoggerConfiguration()
                        .Enrich.FromLogContext()
                        .WriteTo.MSSqlServer(apiConfig.ConnectionString,
-                       autoCreateSqlTable: true,
-                       restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
-                       appConfiguration: Configuration,
-                       tableName: Configuration["Logging:Table"])
+                           autoCreateSqlTable: true,
+                           restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning,
+                           tableName: Configuration["Logging:Table"])
+                        .WriteTo.File(env.WebRootPath + "\\logs\\log_.txt",
+                            rollingInterval: RollingInterval.Minute,
+                            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
                        .CreateLogger();
 
             app.UseStaticFiles(new StaticFileOptions

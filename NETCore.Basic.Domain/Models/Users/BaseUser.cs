@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NETCore.Basic.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,5 +11,6 @@ namespace NETCore.Basic.Domain.Models.Users
         public string Name { get; set; }
         public string Email { get; set; }
         public DateTime RegistredAt { get; set; }
+        public Role Role { get; set; }
     }
 }

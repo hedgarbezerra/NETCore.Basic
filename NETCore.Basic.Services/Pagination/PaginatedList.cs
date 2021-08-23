@@ -40,7 +40,7 @@ namespace NETCore.Basic.Services.Pagination
         {
             get
             {
-                return (PageIndex + 1 < TotalPages);
+                return (PageIndex < TotalPages);
             }
         }
     }

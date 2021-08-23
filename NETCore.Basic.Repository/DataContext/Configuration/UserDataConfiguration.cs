@@ -37,6 +37,11 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
                 .HasColumnType("datetime")
                 .IsRequired();
 
+            builder.Property(c => c.Role)
+                .HasColumnType("varchar")
+                .HasConversion<string>()
+                .HasMaxLength(50);
+
         }
 
         protected override void ConfigurateFK(EntityTypeBuilder<User> builder)

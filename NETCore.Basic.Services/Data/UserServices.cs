@@ -45,7 +45,7 @@ namespace NETCore.Basic.Services.Data
             var validationResult = _validationRules.Validate(user);
             errors = validationResult.Errors;
 
-            if (!validationResult.IsValid && validationResult.Errors.Any()) return false;
+            if (!validationResult.IsValid && validationResult.Errors.Any()) throw new Exception(string.Join(" ", validationResult.Errors));
 
             user.Password = _hashingService.ComputeHash(user.Password);
             user.RegistredAt = DateTime.Now;
@@ -64,7 +64,7 @@ namespace NETCore.Basic.Services.Data
 
         public PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize)
         {
-            var mappedList = _mapper.ProjectTo<OutputUser>(_repository.Get(), typeof(OutputUser));
+            var mappedList = _mapper.ProjectTo<OutputUser>(null, typeof(OutputUser));
 
            return new PaginatedList<OutputUser>(mappedList, uriService, route, pageIndex, pageSize);
         }

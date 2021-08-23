@@ -19,6 +19,44 @@ namespace NETCore.Basic.Repository.Migrations
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("NETCore.Basic.Domain.Entities.EventLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime")
+                        .HasColumnName("TimeStamp");
+
+                    b.Property<string>("Exception")
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Exception");
+
+                    b.Property<string>("LogLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Level");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Message");
+
+                    b.Property<string>("MessageTemplate")
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("MessageTemplate");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Properties");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TbLog");
+                });
+
             modelBuilder.Entity("NETCore.Basic.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -42,9 +80,12 @@ namespace NETCore.Basic.Repository.Migrations
                         .HasColumnType("varchar(1000)");
 
                     b.Property<DateTime>("RegistredAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2021, 8, 18, 0, 52, 32, 452, DateTimeKind.Local).AddTicks(9215));
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Username")
                         .IsRequired()

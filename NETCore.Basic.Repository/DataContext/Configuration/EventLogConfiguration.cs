@@ -11,13 +11,12 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
 {
     public sealed class EventLogConfiguration : DataConfiguration<EventLog>
     {
-        public EventLogConfiguration(IConfiguration config)
+        public EventLogConfiguration()
             :base()
         {
-            _config = config;
         }
 
-        public IConfiguration _config { get; }
+        public APISettings _config { get; }
 
         protected override void ConfigurateFields(EntityTypeBuilder<EventLog> builder)
         {
@@ -63,7 +62,7 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
 
         protected override void ConfigurateTableName(EntityTypeBuilder<EventLog> builder)
         {
-            builder.ToTable(_config["Logging:Table"]);
+            builder.ToTable("TbLog");
         }
     }
 }

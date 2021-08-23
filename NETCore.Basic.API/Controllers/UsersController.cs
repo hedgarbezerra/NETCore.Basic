@@ -42,24 +42,7 @@ namespace NETCore.Basic.API.Controllers
             _mailHandler = mailHandler;
             _azureStorage = azureStorage;
         }
-        [HttpGet]
-        [Route("storage")]
-        public IActionResult AzureStorage()
-        {
-            var storageItems = _azureStorage.GetAllAsync();
-            var storaSingle = _azureStorage.Get("Boleto_Lello_32854859.pdf");
-            return Ok();
-        }
-
-        [HttpGet]
-        [Route("mail")]
-        public IActionResult Mail(string email)
-        {
-            _mailHandler.Notify(email, "Teste", "Este é um teste ok");
-
-            return Ok();
-        }
-
+        
         /// <summary>
         /// Paginated response for user list along with HATEOAS
         /// </summary>
@@ -72,13 +55,25 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
-            var route = Request.Path.Value;
-            var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
+            try
+            {
 
-            if (paginatedList.TotalCount <= 0)
-                return NotFound();
+                Serilog.Log.Logger.Information("Começando");
+                Serilog.Log.Logger.Warning("Começando war");
+                var route = Request.Path.Value;
+                var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
 
-            return Ok(paginatedList);
+                if (paginatedList.TotalCount <= 0)
+                    return NotFound();
+
+                return Ok(paginatedList);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Logger.Error(ex.Message);
+                return StatusCode(500);
+            }
+            
         }
 
         [HttpGet]
