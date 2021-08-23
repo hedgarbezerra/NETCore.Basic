@@ -1,14 +1,21 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using NETCore.Basic.Util.Crypto;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NETCore.Basic.Util.Configuration
 {
-    public static class EmailSettings
+    public class EmailSettings : BaseSettings
     {
-        public static string SMTPEmail { get; private set; }
-        public static string SMTPPassword { get; private set; }
-        public static int SMTPPort { get; private set; }
-        public static string SMTPHostname { get; private set; }
+        public EmailSettings(IConfiguration config, IEncryption encryption)
+            :base(config, encryption)
+        {
+
+        }
+        public string SMTPEmail { get => GetConfiguration("SMTP-EMAIL-ADDRESS", "SMTP_EMAIL_ADDRESS"); }
+        public string SMTPPassword { get => GetConfiguration("SMTP-EMAIL-PASSWORD", "SMTP_EMAIL_PASSWORD", true); }
+        public int SMTPPort { get => Convert.ToInt32(GetConfiguration("SMTP-PORT", "SMTP_PORT") ?? "0"); }
+        public string SMTPHostname { get => GetConfiguration("SMTP-HOSTNAME", "SMTP_HOSTNAME"); }
     }
 }

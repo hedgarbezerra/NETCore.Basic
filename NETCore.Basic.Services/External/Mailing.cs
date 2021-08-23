@@ -1,7 +1,9 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 using NETCore.Basic.Domain.Models.Mailing;
 using NETCore.Basic.Util.Configuration;
+using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
@@ -21,9 +23,11 @@ namespace NETCore.Basic.Tests.Services.External
         private readonly MimeKit.Text.TextFormat _defaultFormat;
         private MimeMessage _message;
         private BodyBuilder _messageBodyBuilder;
+        private readonly EmailSettings _settings;
 
-        public Mailing(MimeKit.Text.TextFormat format = MimeKit.Text.TextFormat.Text)
+        public Mailing(IConfiguration config, IEncryption encryption, MimeKit.Text.TextFormat format = MimeKit.Text.TextFormat.Text)
         {
+            _settings = new EmailSettings(config, encryption);
             _message = NewMessage("Title");
             _messageBodyBuilder = new BodyBuilder();
             _defaultFormat = format;
@@ -62,7 +66,7 @@ namespace NETCore.Basic.Tests.Services.External
         private MimeMessage NewMessage(string titleMessage)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(titleMessage, EmailSettings.SMTPEmail));
+            message.From.Add(new MailboxAddress(titleMessage, _settings.SMTPEmail));
 
             return message;
         }
@@ -89,9 +93,9 @@ namespace NETCore.Basic.Tests.Services.External
                 using (var client = new SmtpClient())
                 {
                     client.CheckCertificateRevocation = false;
-                    client.Connect(EmailSettings.SMTPHostname, EmailSettings.SMTPPort, MailKit.Security.SecureSocketOptions.StartTls);
+                    client.Connect(_settings.SMTPHostname, _settings.SMTPPort, MailKit.Security.SecureSocketOptions.StartTls);
 
-                    client.Authenticate(EmailSettings.SMTPEmail, EmailSettings.SMTPPassword);
+                    client.Authenticate(_settings.SMTPEmail, _settings.SMTPPassword);
 
                     client.Send(message);
                     client.Disconnect(true);

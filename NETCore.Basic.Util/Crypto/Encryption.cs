@@ -14,20 +14,20 @@ namespace NETCore.Basic.Util.Crypto
     public interface IEncryption
     {
         string Encrypt(string plainText);
-        //byte[] Encrypt(byte[] plainTextBytes);
         string Decrypt(string cipherText);
-        //byte[] Decrypt(byte[] cipherTextBytesWithSaltAndIv, out int decryptedByteCount);
     }
     /// <summary>
     /// Classe estática voltada a encriptação
     /// </summary>
     public class Encryption : IEncryption
     {
-        public Encryption(IAPIConfigurations configuration)
+        public Encryption(IConfiguration configuration)
         {
-            _key = Convert.FromBase64String(configuration.CryptoKey);
+            settings = new APISettings(configuration);
+            _key = Convert.FromBase64String(settings.EncryptionKey);
         }
         private byte[] _key;
+        private readonly APISettings settings;
 
         public string Decrypt(string value)
         {

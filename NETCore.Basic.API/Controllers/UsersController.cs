@@ -7,7 +7,9 @@ using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.Data;
+using NETCore.Basic.Services.External;
 using NETCore.Basic.Services.Pagination;
+using NETCore.Basic.Tests.Services.External;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
 using Serilog;
@@ -28,13 +30,34 @@ namespace NETCore.Basic.API.Controllers
         public IMapper _mapper { get; }
         public IUriService _uriService { get; }
         public IEncryption _encryption { get; }
+        public IMailing _mailHandler { get; }
+        public IAzureStorage _azureStorage { get; }
 
-        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IEncryption encryption)
+        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IEncryption encryption, IMailing mailHandler, IAzureStorage azureStorage)
         {
             _userService = userService;
             _mapper = mapper;
             _uriService = uriService;
             _encryption = encryption;
+            _mailHandler = mailHandler;
+            _azureStorage = azureStorage;
+        }
+        [HttpGet]
+        [Route("storage")]
+        public IActionResult AzureStorage()
+        {
+            var storageItems = _azureStorage.GetAllAsync();
+            var storaSingle = _azureStorage.Get("Boleto_Lello_32854859.pdf");
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("mail")]
+        public IActionResult Mail(string email)
+        {
+            _mailHandler.Notify(email, "Teste", "Este é um teste ok");
+
+            return Ok();
         }
 
         /// <summary>

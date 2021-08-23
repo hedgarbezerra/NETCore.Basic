@@ -25,23 +25,20 @@ namespace NETCore.Basic.API
 {
     public sealed class ServicesBinding
     {
-        public ServicesBinding(IAPIConfigurations config, IConfiguration configuration)
+        public ServicesBinding(IConfiguration configuration)
         {
-            _apiConfig = config;
             _config = configuration;
         }
-        public IAPIConfigurations _apiConfig { get; }
         public IConfiguration _config { get; }
 
         public void BindServices(IServiceCollection services)
         {
-            services.AddTransient<IAPIConfigurations, APIConfigurations>();
 
             #region Helpers
             services.AddScoped<IFileHandler<HtmlDocument>, HTMLHandler>();
-            services.AddScoped<IFileHandler<Stream>, FileHandler>();
-            services.AddScoped<IHTMLHandler, HTMLHandler>();
-            services.AddScoped<ILocalFileHandler, FileHandler>();
+            services.AddSingleton<IFileHandler<Stream>, FileHandler>();
+            services.AddSingleton<IHTMLHandler, HTMLHandler>();
+            services.AddSingleton<ILocalFileHandler, FileHandler>();
             services.AddSingleton<IHashing, Hashing>();
             services.AddSingleton<IEncryption, Encryption>();
             services.AddSingleton<IUriService>(o =>
@@ -72,24 +69,22 @@ namespace NETCore.Basic.API
             #endregion
 
             #region Repositories
-            services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(_apiConfig.ConnectionString));
+            var apiSettings = new APISettings(_config);
+            services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(apiSettings.ConnectionString));
             services.AddScoped<IRepository<User>, UsersRepository>();
             services.AddScoped<IRepository<EventLog>, LogRepository>();
 
             #endregion
             #region Services
+            var sProvider = services.BuildServiceProvider();
+            var azureSettings = new AzureSettings(_config, sProvider.GetService<IEncryption>());
             services.AddTransient<IUserServices, UserServices>();
             services.AddTransient<ILoggingService, LoggingService>();
             services.AddTransient<IHttpConsumer, HttpConsumer>();
-            services.AddTransient<IAzureStorage, AzureStorage>((sp) => new AzureStorage(_config["AZR_STORAGE_KEY"], _config["AZR_STORAGE_CONNSTR"], sp.GetService<ILocalFileHandler>()));
+            services.AddTransient<IAzureStorage, AzureStorage>((sp) => new AzureStorage(azureSettings.StorageConnectionString, azureSettings.StorageContainer, sp.GetService<ILocalFileHandler>()));
             services.AddTransient<IMailing, Mailing>();
 
             #endregion
-
-            var emailConfigSection = _config.GetSection("EmailSettings");
-
-            services.AddScoped(sp =>  emailConfigSection.Get(typeof(EmailSettings), options => options.BindNonPublicProperties = true));
-
 
 
             #region Exemplifing case of multiple interface implementation GOTO UsersController for more.

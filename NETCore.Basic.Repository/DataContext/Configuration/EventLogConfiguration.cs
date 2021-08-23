@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Configuration;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Util.Configuration;
 using System;
@@ -10,13 +11,13 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
 {
     public sealed class EventLogConfiguration : DataConfiguration<EventLog>
     {
-        public EventLogConfiguration(IAPIConfigurations configurations)
+        public EventLogConfiguration(IConfiguration config)
             :base()
         {
-            _configurations = configurations;
+            _config = config;
         }
 
-        public IAPIConfigurations _configurations { get; }
+        public IConfiguration _config { get; }
 
         protected override void ConfigurateFields(EntityTypeBuilder<EventLog> builder)
         {
@@ -62,7 +63,7 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
 
         protected override void ConfigurateTableName(EntityTypeBuilder<EventLog> builder)
         {
-            builder.ToTable(_configurations.LoggingTable);
+            builder.ToTable(_config["Logging:Table"]);
         }
     }
 }

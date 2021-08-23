@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -33,14 +34,11 @@ namespace NETCore.Basic.API
 {
     public class Startup
     {
-        private readonly APIConfigurations _apiConfigurations;
-        public IConfiguration Configuration { get; }
-        public IEncryption _encryption { get; }
+        public IConfiguration Configuration { get; set; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _apiConfigurations = new APIConfigurations(configuration);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -62,18 +60,16 @@ namespace NETCore.Basic.API
 
             services.AddDirectoryBrowser();
 
-            ServicesBinding binding = new ServicesBinding(_apiConfigurations, Configuration);
+            ServicesBinding binding = new ServicesBinding(Configuration);
             binding.BindServices(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             #region Setting up exception handling
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
             }
             else
             {
@@ -87,19 +83,29 @@ namespace NETCore.Basic.API
 
                     await context.Response.WriteAsync(result);
                 }));
-
-                var builder = new ConfigurationBuilder()
-                    .AddAzureKeyVault(Configuration["AZR_KV_URI"], Configuration["AZR_KV_KEY"], Configuration["AZR_KV_SECRET"]);
-                builder.Build();
             }
             #endregion
 
+            #region Setting up Azure Keyvault
+
+            var sp = app.ApplicationServices;
+            var azureSettings = new AzureSettings(Configuration, sp.GetService<IEncryption>());
+            if (!env.IsProduction())
+            {
+                var builder = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", false, true)
+                   .AddAzureKeyVault(new AzureKeyVaultConfigurationOptions(azureSettings.KeyVaultURI, azureSettings.KeyVaultClientId, azureSettings.KeyVaultKey));
+
+                Configuration = builder.Build();
+            }
+            #endregion
 
             #region setting up logging and log browser visualization
+            var apiConfig = new APISettings(Configuration);
 
             Log.Logger = new LoggerConfiguration()
                        .Enrich.FromLogContext()
-                       .WriteTo.MSSqlServer(Configuration["SQLCONNSTR_DEFAULT"],
+                       .WriteTo.MSSqlServer(apiConfig.ConnectionString,
                        autoCreateSqlTable: true,
                        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
                        appConfiguration: Configuration,

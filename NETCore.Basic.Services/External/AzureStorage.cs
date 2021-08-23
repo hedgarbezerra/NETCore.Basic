@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NETCore.Basic.Services.External
 {
@@ -18,6 +19,7 @@ namespace NETCore.Basic.Services.External
         Response<BlobContentInfo> Upload(Stream conteudo);
         Response<bool> Delete(string nomeBlob);
         Response<bool> Delete(BlobClient blobClient);
+        AsyncPageable<BlobItem> GetAllAsync();
 
     }
 
@@ -54,6 +56,10 @@ namespace NETCore.Basic.Services.External
         public Pageable<BlobItem> GetAll()
         {
             return _container.GetBlobs();
+        }
+        public AsyncPageable<BlobItem> GetAllAsync()
+        {
+            return  _container.GetBlobsAsync();
         }
         public Response<BlobContentInfo> Upload(string nome, Stream conteudo)
         {

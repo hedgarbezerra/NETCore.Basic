@@ -1,15 +1,27 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using NETCore.Basic.Util.Crypto;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NETCore.Basic.Util.Configuration
 {
-    public static class AzureSettings
+    public class AzureSettings : BaseSettings
     {
-        public static string StorageKey { get; set; }
-        public static string StorageContainer { get; set; }
-        public static string StorageConnectionString { get; set; }
+        public AzureSettings(IConfiguration config)
+            : base(config)
+        {
+        }
+        public AzureSettings(IConfiguration config, IEncryption encryption)
+          : base(config, encryption)
+        {
+        }
+        public string StorageKey { get => GetConfiguration("AZR-STORAGE-KEY", "AZR_STORAGE_KEY"); }
+        public string StorageContainer { get => GetConfiguration("AZR-STORAGE-CONTAINER", "AZR_STORAGE_CONTAINER", true); }
+        public string StorageConnectionString { get => GetConfiguration("AZR-STORAGE-CONNSTR", "AZR_STORAGE_CONNSTR"); }
 
-        public static string KeyVaultKey { get; set; }
+        public string KeyVaultClientId { get => GetConfiguration("AZR_KV_APP_ID"); }
+        public string KeyVaultURI { get => GetConfiguration("AZR_KV_URI"); }
+        public string KeyVaultKey { get => GetConfiguration("AZR_KV_KEY"); }
     }
 }

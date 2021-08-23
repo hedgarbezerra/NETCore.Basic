@@ -12,15 +12,27 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "log",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "SMTP_HOSTNAME": "smtp.gmail.com",
+        "AZR_STORAGE_KEY": "gVPPyQ3MSKmc34oLZIDoFcT8203dLlPtl/q3cEvcCer4Z/LB2mfutdYyQEaqE3W5g3TRUzKwniHvg3PMBLwuLw==",
+        "AZR_STORAGE_CONNSTR": "DefaultEndpointsProtocol=https;AccountName=netcoretesting;AccountKey=gVPPyQ3MSKmc34oLZIDoFcT8203dLlPtl/q3cEvcCer4Z/LB2mfutdYyQEaqE3W5g3TRUzKwniHvg3PMBLwuLw==;EndpointSuffix=core.windows.net",
+        "SMTP_EMAIL_PASSWORD": "eLzhp8JEAxpsSV1UzlRMCmUZ8Q6HVkEEevuk78C+QnV6ukqsfmRzJpuqxzy0x1rY",
+        "AZR_KV_URI": "https://kv-testnetcore.vault.azure.net/",
+        "AZR_KV_KEY": "7HHr-8iJ.p~CRC9-sz_L15wt_ID1g5GFXf",
+        "AZR_KV_APP_ID": "015df1b4-74c2-46ba-9e80-ad5ec4ef5716",
+        "AZR_STORAGE_CONTAINER": "MD5ydtmy04sGrG9hlUKccAZSXMH7NOFRM4Q6uMfEl3g=",
+        "ENCRYPTION_KEY": "l8cpD27QcWDXjAg8ut+qH0IkWv/p38DrAst4Ee83jMg=",
+        "SMTP_PORT": "587",
+        "SMTP_EMAIL_ADDRESS": "hedgarbezerra35@gmail.com",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQLCONNSTR_DEFAULT": "Data Source=HED-GAMING;Initial Catalog=NETCoreAPIDb;Integrated Security=True"
+      },
+      "nativeDebugging": true
     },
     "NETCore.Basic.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -29,7 +41,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/weatherforecast",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/log",
       "publishAllPorts": true,
       "useSSL": true
     }

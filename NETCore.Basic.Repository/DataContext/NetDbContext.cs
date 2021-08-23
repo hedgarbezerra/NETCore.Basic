@@ -12,12 +12,14 @@ namespace NETCore.Basic.Repository.DataContext
 {
     public class NetDbContext : DbContext
     {
-        public IAPIConfigurations _configurations { get; }
         public NetDbContext()
         {}
-        public NetDbContext(DbContextOptions options, IAPIConfigurations configurations) : base(options)
+        public NetDbContext(DbContextOptions options) : base(options)
         {
-            _configurations = configurations;
+        }
+        public NetDbContext(DbContextOptions options, IConfiguration config) : base(options)
+        {
+            _config = config;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,9 +29,10 @@ namespace NETCore.Basic.Repository.DataContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserDataConfiguration());
-            builder.ApplyConfiguration(new EventLogConfiguration(_configurations));
+            builder.ApplyConfiguration(new EventLogConfiguration(_config));
         }
         public DbSet<User> Users { get; set; }
         public DbSet<EventLog> Logs { get; set; }
+        public IConfiguration _config { get; }
     }
 }
