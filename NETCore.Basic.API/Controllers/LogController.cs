@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 namespace NETCore.Basic.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Administrator")]
     [ApiController]
     public class LogController : ControllerBase
     {

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -59,13 +60,14 @@ namespace NETCore.Basic.API
                     ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    ops.JsonSerializerOptions.MaxDepth = 64; 
+                    ops.JsonSerializerOptions.MaxDepth = 64;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services.AddSwaggerGen(s => 
+            #region Swagger documentation setup
+            
+            services.AddSwaggerGen(s =>
             {
-                s.SwaggerDoc("v1", new OpenApiInfo 
+                s.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "NET Core API",
                     Version = "v1",
@@ -76,8 +78,38 @@ namespace NETCore.Basic.API
                         Url = new Uri("https://github.com/hedgarbezerra"),
                         Email = "hedgarbezerra35@gmail.com"
                     }
-                });            
+                });
+
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                });
+
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+
+                    }
+                });
             });
+            #endregion
+
+            #region JWT token bearer and authentication setup
+
             var appSettings = new APISettings(Configuration);
             byte[] tokenKeyBytes = Encoding.ASCII.GetBytes(appSettings.TokenKey);
 
@@ -89,12 +121,17 @@ namespace NETCore.Basic.API
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
+                x.IncludeErrorDetails = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(tokenKeyBytes),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateIssuer = true,
+                    ValidIssuer = "NET Core API",
+                    ValidateAudience = false,
+                    ValidateTokenReplay = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -103,6 +140,7 @@ namespace NETCore.Basic.API
                 options.AddPolicy("AllowSpecificOrigin",
                     builder => builder.WithOrigins("http://example.com").AllowAnyHeader());
             });
+            #endregion
 
             ServicesBinding binding = new ServicesBinding(Configuration);
             binding.BindServices(services);
@@ -208,7 +246,7 @@ namespace NETCore.Basic.API
             #endregion
             //var builder = new ConfigurationBuilder()
             //    .AddEnvironmentVariables("AZR_")
-                
+
         }
     }
 }

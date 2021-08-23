@@ -46,7 +46,7 @@ namespace NETCore.Basic.Services.Data
             var validationResult = _validationRules.Validate(user);
             errors = validationResult.Errors;
 
-            if (!validationResult.IsValid && validationResult.Errors.Any()) throw new Exception(string.Join(" ", validationResult.Errors));
+            if (!validationResult.IsValid && validationResult.Errors.Any()) return false;
 
             user.Password = _hashingService.ComputeHash(user.Password);
             user.RegistredAt = DateTime.Now;

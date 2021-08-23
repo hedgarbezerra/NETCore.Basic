@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 namespace NETCore.Basic.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Administrator")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -47,7 +48,6 @@ namespace NETCore.Basic.API.Controllers
         /// <returns>Paged object with list of Users</returns>
         [HttpGet]
         [Route("get")]
-        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(typeof(PaginatedList<OutputUser>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 403)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
@@ -89,6 +89,7 @@ namespace NETCore.Basic.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("authenticate")]
         [ProducesResponseType(typeof(AuthenticationResponse), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
