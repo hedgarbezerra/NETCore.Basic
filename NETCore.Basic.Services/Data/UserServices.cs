@@ -18,7 +18,7 @@ namespace NETCore.Basic.Services.Data
     public interface IUserServices
     {
         bool Add(User user, out List<ValidationFailure> errors);
-        bool Authenticate(User user);
+        bool Authenticate(User user, out User ctxUser);
         IQueryable<User> Get();
         IQueryable<User> Get(Expression<Func<User, bool>> filter);
         User Get(int id);
@@ -56,9 +56,9 @@ namespace NETCore.Basic.Services.Data
 
             return userCtx.Id >= 1;
         }
-        public bool Authenticate(User user)
+        public bool Authenticate(User user, out User dbUser)
         {
-            var dbUser = _repository.Get(u => u.Username == user.Username).SingleOrDefault();
+            dbUser = _repository.Get(u => u.Username == user.Username).SingleOrDefault();
             if (dbUser is null) return false;
 
             return _hashingService.VerifyHash(user.Password, dbUser.Password);
@@ -71,7 +71,7 @@ namespace NETCore.Basic.Services.Data
 
         public PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize)
         {
-            var mappedList = _mapper.ProjectTo<OutputUser>(null, typeof(OutputUser));
+            var mappedList = _mapper.ProjectTo<OutputUser>(_repository.Get(), typeof(OutputUser));
 
            return new PaginatedList<OutputUser>(mappedList, uriService, route, pageIndex, pageSize);
         }

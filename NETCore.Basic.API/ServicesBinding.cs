@@ -80,6 +80,7 @@ namespace NETCore.Basic.API
             var azureSettings = new AzureSettings(_config, sProvider.GetService<IEncryption>());
             services.AddTransient<IUserServices, UserServices>();
             services.AddTransient<ILoggingService, LoggingService>();
+            services.AddTransient<IAuthService, AuthService>((_) => new AuthService(apiSettings.TokenKey));
             services.AddTransient<IHttpConsumer, HttpConsumer>();
             services.AddTransient<IAzureStorage, AzureStorage>((sp) => new AzureStorage(azureSettings.StorageConnectionString, azureSettings.StorageContainer, sp.GetService<ILocalFileHandler>()));
             services.AddTransient<IMailing, Mailing>();

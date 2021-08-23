@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation.Results;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
@@ -29,18 +30,14 @@ namespace NETCore.Basic.API.Controllers
         public IUserServices _userService { get; }
         public IMapper _mapper { get; }
         public IUriService _uriService { get; }
-        public IEncryption _encryption { get; }
-        public IMailing _mailHandler { get; }
-        public IAzureStorage _azureStorage { get; }
+        public IAuthService _authService { get; }
 
-        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IEncryption encryption, IMailing mailHandler, IAzureStorage azureStorage)
+        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IAuthService authService)
         {
             _userService = userService;
             _mapper = mapper;
             _uriService = uriService;
-            _encryption = encryption;
-            _mailHandler = mailHandler;
-            _azureStorage = azureStorage;
+            _authService = authService;
         }
         
         /// <summary>
@@ -50,8 +47,9 @@ namespace NETCore.Basic.API.Controllers
         /// <returns>Paged object with list of Users</returns>
         [HttpGet]
         [Route("get")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType(typeof(PaginatedList<OutputUser>), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 403)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Get([FromQuery] PaginationFilter query)
         {
@@ -91,14 +89,19 @@ namespace NETCore.Basic.API.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [Route("authenticate")]
+        [ProducesResponseType(typeof(AuthenticationResponse), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Get([FromBody] InputUser user)
+        public IActionResult Authenticate([FromBody] InputUser user)
         {
             var mappedUser = _mapper.Map<InputUser, User>(user);
-            var result = _userService.Authenticate(mappedUser);
-            return Ok(result);
+            var result = _userService.Authenticate(mappedUser, out User authenticatedUser);
+            var response = new AuthenticationResponse() { IsAuthenticated = result };
+
+            if (result)
+                response.Token = _authService.GenerateToken(authenticatedUser);
+
+            return Ok(response);
         }
 
         [HttpPost]
