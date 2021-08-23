@@ -90,14 +90,15 @@ namespace NETCore.Basic.API.Controllers
             return Ok(mappedUser);
         }
 
-        [HttpGet]
-        [Route("get/{userId}/mail")]
-        [ProducesResponseType(typeof(OutputUser), 200)]
+        [HttpPost]
+        [Route("login")]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Get(int userId)
+        public IActionResult Get([FromBody] InputUser user)
         {
-            return Ok(_userService.Get(userId).Email);
+            var mappedUser = _mapper.Map<InputUser, User>(user);
+            var result = _userService.Authenticate(mappedUser);
+            return Ok(result);
         }
 
         [HttpPost]

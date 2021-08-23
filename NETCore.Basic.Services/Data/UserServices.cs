@@ -18,6 +18,7 @@ namespace NETCore.Basic.Services.Data
     public interface IUserServices
     {
         bool Add(User user, out List<ValidationFailure> errors);
+        bool Authenticate(User user);
         IQueryable<User> Get();
         IQueryable<User> Get(Expression<Func<User, bool>> filter);
         User Get(int id);
@@ -55,7 +56,13 @@ namespace NETCore.Basic.Services.Data
 
             return userCtx.Id >= 1;
         }
+        public bool Authenticate(User user)
+        {
+            var dbUser = _repository.Get(u => u.Username == user.Username).SingleOrDefault();
+            if (dbUser is null) return false;
 
+            return _hashingService.VerifyHash(user.Password, dbUser.Password);
+        }
         public IQueryable<User> Get() => _repository.Get();
 
         public User Get(int id) => _repository.Get(id);

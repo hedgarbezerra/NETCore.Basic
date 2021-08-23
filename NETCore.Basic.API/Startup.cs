@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using NETCore.Basic.Repository.DataContext;
 using NETCore.Basic.Services;
 using NETCore.Basic.Services.Mapping;
@@ -44,6 +45,7 @@ namespace NETCore.Basic.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddDirectoryBrowser();
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
@@ -58,7 +60,21 @@ namespace NETCore.Basic.API
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services.AddDirectoryBrowser();
+            services.AddSwaggerGen(s => 
+            {
+                s.SwaggerDoc("v1", new OpenApiInfo 
+                {
+                    Title = "NET Core API",
+                    Version = "v1",
+                    Description = "Exemplo de API REST criada com o ASP.NET Core",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Hedgar Bezerra",
+                        Url = new Uri("https://github.com/hedgarbezerra"),
+                        Email = "hedgarbezerra35@gmail.com"
+                    }
+                });            
+            });
 
             ServicesBinding binding = new ServicesBinding(Configuration);
             binding.BindServices(services);
@@ -128,7 +144,11 @@ namespace NETCore.Basic.API
             #endregion
 
             app.UseHttpsRedirection();
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NET Core API v1");
+            });
             app.UseRouting();
 
             app.UseAuthorization();
