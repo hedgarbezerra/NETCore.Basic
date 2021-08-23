@@ -88,10 +88,10 @@ namespace NETCore.Basic.API
 
             #region Setting up Azure Keyvault
 
-            var sp = app.ApplicationServices;
-            var azureSettings = new AzureSettings(Configuration, sp.GetService<IEncryption>());
-            if (!env.IsProduction())
+            if (env.IsProduction())
             {
+                var sp = app.ApplicationServices;
+                var azureSettings = new AzureSettings(Configuration, sp.GetService<IEncryption>());
                 var builder = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json", false, true)
                    .AddAzureKeyVault(new AzureKeyVaultConfigurationOptions(azureSettings.KeyVaultURI, azureSettings.KeyVaultClientId, azureSettings.KeyVaultKey));
