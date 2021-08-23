@@ -75,6 +75,12 @@ namespace NETCore.Basic.API
                     }
                 });            
             });
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins("http://example.com").AllowAnyHeader());
+            });
 
             ServicesBinding binding = new ServicesBinding(Configuration);
             binding.BindServices(services);
@@ -150,7 +156,7 @@ namespace NETCore.Basic.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NET Core API v1");
             });
             app.UseRouting();
-
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
