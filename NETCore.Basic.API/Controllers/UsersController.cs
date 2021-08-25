@@ -37,7 +37,7 @@ namespace NETCore.Basic.API.Controllers
         private IAuthService _authService { get; }
         private IUrlHelper _urlHelper { get; }
 
-        public UsersController(IUserServices userService, IMapper mapper,IAzureStorage azureStorage, ILocalFileHandler fileHandler, IUriService uriService, IAuthService authService, IUrlHelper urlHelper)
+        public UsersController(IUserServices userService, IMapper mapper, IAzureStorage azureStorage, ILocalFileHandler fileHandler, IUriService uriService, IAuthService authService, IUrlHelper urlHelper)
         {
             _userService = userService;
             _mapper = mapper;
@@ -71,10 +71,9 @@ namespace NETCore.Basic.API.Controllers
             }
             catch (Exception ex)
             {
-                Serilog.Log.Logger.Error(ex.Message);
                 return StatusCode(500);
             }
-            
+
         }
 
         [HttpGet]
@@ -82,22 +81,26 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(HATEOASResult<OutputUser>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 403)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Geth([FromQuery] int id)
+        public IActionResult Geth([ModelBinder(typeof(CustomUserIdBinder))] string[] ids)
         {
             try
             {
-                var route = Request.Path.Value;
-                var result = _userService.GetHateoas(id);
+                if (ids?.Length <= 0)
+                    return NoContent();
+                List<HATEOASResult<User>> result = new List<HATEOASResult<User>>(ids.Length);
 
-                if (result == null) return NoContent();
-
-                AddLinksHATEOAS(result, id);
+                foreach (var id in ids)
+                {
+                    var newId = Convert.ToInt32(id);
+                    var hateoasResult = _userService.GetHateoas(newId);
+                    AddLinksHATEOAS(hateoasResult, newId);
+                    result.Add(hateoasResult);
+                }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                Serilog.Log.Logger.Error(ex.Message);
                 return StatusCode(500);
             }
 
@@ -155,7 +158,7 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), 500)]
         public IActionResult Delete(int id)
         {
-             _userService.Delete(id);
+            _userService.Delete(id);
 
             return Ok();
         }
