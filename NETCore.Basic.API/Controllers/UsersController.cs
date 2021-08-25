@@ -12,6 +12,7 @@ using NETCore.Basic.Services.External;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Tests.Services.External;
 using NETCore.Basic.Util.Crypto;
+using NETCore.Basic.Util.Extentions;
 using NETCore.Basic.Util.Helper;
 using Serilog;
 using System;
@@ -24,23 +25,28 @@ using System.Threading.Tasks;
 namespace NETCore.Basic.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrator")]
+    //[Authorize(Roles = "Administrator")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        public IUserServices _userService { get; }
-        public IMapper _mapper { get; }
-        public IUriService _uriService { get; }
-        public IAuthService _authService { get; }
+        private IUserServices _userService { get; }
+        private IMapper _mapper { get; }
+        private IAzureStorage _azureStorage { get; }
+        private ILocalFileHandler _fileHandler { get; }
+        private IUriService _uriService { get; }
+        private IAuthService _authService { get; }
+        private IUrlHelper _urlHelper { get; }
 
-        public UsersController(IUserServices userService, IMapper mapper, IUriService uriService, IAuthService authService)
+        public UsersController(IUserServices userService, IMapper mapper,IAzureStorage azureStorage, ILocalFileHandler fileHandler, IUriService uriService, IAuthService authService, IUrlHelper urlHelper)
         {
             _userService = userService;
             _mapper = mapper;
+            _azureStorage = azureStorage;
+            _fileHandler = fileHandler;
             _uriService = uriService;
             _authService = authService;
+            _urlHelper = urlHelper;
         }
-        
         /// <summary>
         /// Paginated response for user list along with HATEOAS
         /// </summary>
@@ -51,13 +57,10 @@ namespace NETCore.Basic.API.Controllers
         [ProducesResponseType(typeof(PaginatedList<OutputUser>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 403)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Get([FromQuery] PaginationFilter query)
+        public IActionResult GetAll([FromQuery] PaginationFilter query)
         {
             try
             {
-
-                Serilog.Log.Logger.Information("Começando");
-                Serilog.Log.Logger.Warning("Começando war");
                 var route = Request.Path.Value;
                 var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
 
@@ -75,17 +78,86 @@ namespace NETCore.Basic.API.Controllers
         }
 
         [HttpGet]
+        [Route("getH")]
+        [ProducesResponseType(typeof(HATEOASResult<OutputUser>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 403)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Geth([FromQuery] int id)
+        {
+            try
+            {
+                var route = Request.Path.Value;
+                var result = _userService.GetHateoas(id);
+
+                if (result == null) return NoContent();
+
+                AddLinksHATEOAS(result, id);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Logger.Error(ex.Message);
+                return StatusCode(500);
+            }
+
+        }
+        [HttpGet]
         [Route("get/{Id}")]
         [ProducesResponseType(typeof(OutputUser), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
         [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult GetById(int Id)
+        public IActionResult Get(int Id)
         {
             var userCtx = _userService.Get(Id);
             if (userCtx == null)
                 return NoContent();
             var mappedUser = _mapper.Map<OutputUser>(userCtx);
+
             return Ok(mappedUser);
+        }
+
+        [HttpPost]
+        [Route("post")]
+        [ProducesResponseType(typeof(OutputUser), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Post([FromBody] InputUser user)
+        {
+            var mappedUser = _mapper.Map<User>(user);
+
+            var success = _userService.Add(mappedUser, out List<ValidationFailure> errors);
+            if (success)
+                return CreatedAtAction(nameof(Post), success);
+            else
+                return StatusCode(500, errors.Select(err => err.ErrorMessage));
+        }
+
+        [HttpPut]
+        [Route("put/{id}")]
+        [ProducesResponseType(typeof(OutputUser), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Put([FromBody] InputUser user)
+        {
+            var mappedUser = _mapper.Map<User>(user);
+
+            var success = _userService.Update(mappedUser, out List<ValidationFailure> errors);
+            if (success)
+                return CreatedAtAction(nameof(Post), success);
+            else
+                return StatusCode(500, errors.Select(err => err.ErrorMessage));
+        }
+        [HttpDelete]
+        [Route("delete/{id}")]
+        [ProducesResponseType(typeof(OutputUser), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult Delete(int id)
+        {
+             _userService.Delete(id);
+
+            return Ok();
         }
 
         [HttpPost]
@@ -105,21 +177,11 @@ namespace NETCore.Basic.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
-        [Route("insert")]
-        [ProducesResponseType(typeof(OutputUser), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
-        public IActionResult Post([FromBody] InputUser user)
+        private void AddLinksHATEOAS<T>(HATEOASResult<T> hateoas, int id) where T : class
         {
-            var mappedUser = _mapper.Map<User>(user);
-
-            var success = _userService.Add(mappedUser, out List<ValidationFailure> errors);
-            if (success)
-                return CreatedAtAction(nameof(Post), success);
-            else
-                return StatusCode(500, errors.Select(err => err.ErrorMessage));
+            hateoas.AddLink("self", _uriService.GetUri($"/api/users/{Method.GET}/{id}"), Method.GET);
+            hateoas.AddLink("update-user", _uriService.GetUri($"/api/users/{nameof(Put)}/{id}"), Method.PUT);
+            hateoas.AddLink("delete-user", _uriService.GetUri($"/api/users/{nameof(Delete)}/{id} "), Method.DELETE);
         }
-
     }
 }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
@@ -49,6 +51,9 @@ namespace NETCore.Basic.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                 .AddScoped<IUrlHelper>(x => x.GetRequiredService<IUrlHelperFactory>()
+                 .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
             services.AddDirectoryBrowser();
             services.AddControllers()
                 .AddJsonOptions(ops =>

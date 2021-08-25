@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,8 @@ namespace NETCore.Basic.Services.External
     {
         Pageable<BlobItem> GetAll();
         BlobClient Get(string nome);
-        Response<BlobContentInfo> Upload(string nome, Stream conteudo);
+        BlobClient Get(TransaferenceFile file);
+        Response<BlobContentInfo> Upload(TransaferenceFile file);
         Response<BlobContentInfo> Upload(string path);
         Response<BlobContentInfo> Upload(Stream conteudo);
         Response<bool> Delete(string nomeBlob);
@@ -53,6 +55,11 @@ namespace NETCore.Basic.Services.External
             return _container.GetBlobClient(nome);
         }
 
+        public BlobClient Get(TransaferenceFile file)
+        {
+            return Get(file.Name);
+        }
+
         public Pageable<BlobItem> GetAll()
         {
             return _container.GetBlobs();
@@ -61,11 +68,11 @@ namespace NETCore.Basic.Services.External
         {
             return  _container.GetBlobsAsync();
         }
-        public Response<BlobContentInfo> Upload(string nome, Stream conteudo)
+        public Response<BlobContentInfo> Upload(TransaferenceFile file)
         {
-            _container.DeleteBlobIfExists(nome);
+            _container.DeleteBlobIfExists(file.Name);
 
-            return _container.UploadBlob(nome, conteudo);
+            return _container.UploadBlob(file.Name, file.Content);
         }
 
         public Response<BlobContentInfo> Upload(string path)

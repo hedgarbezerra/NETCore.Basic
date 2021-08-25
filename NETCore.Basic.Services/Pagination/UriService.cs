@@ -8,7 +8,8 @@ namespace NETCore.Basic.Services.Pagination
 {
     public interface IUriService
     {
-        public Uri GetPageUri(int pageIndex, int pageSize,  string route);
+        Uri GetPageUri(int pageIndex, int pageSize,  string route);
+        Uri GetUri(string route);
     }
     public class UriService : IUriService
     {
@@ -23,6 +24,11 @@ namespace NETCore.Basic.Services.Pagination
             var modifiedUri = QueryHelpers.AddQueryString(_endpointUri.ToString(), "pageIndex", pageIndex.ToString());
             modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pageSize.ToString());
             return new Uri(modifiedUri);
+        }
+
+        public Uri GetUri(string route)
+        {
+            return  new Uri(string.Concat(_baseUri, route));
         }
     }
 }

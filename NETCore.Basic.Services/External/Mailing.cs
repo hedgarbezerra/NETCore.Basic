@@ -1,7 +1,7 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
-using NETCore.Basic.Domain.Models.Mailing;
+using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
@@ -14,7 +14,7 @@ namespace NETCore.Basic.Tests.Services.External
 {
     public interface IMailing
     {
-        void AdicionarAnexo(MailFile file);
+        void AdicionarAnexo(TransaferenceFile file);
         void Notify(List<string> receiverAddresses, string title, string message = "");
         void Notify(string receiverAddress, string title, string message = "");
     }
@@ -70,7 +70,7 @@ namespace NETCore.Basic.Tests.Services.External
 
             return message;
         }
-        public void AdicionarAnexo(MailFile file)
+        public void AdicionarAnexo(TransaferenceFile file)
         {
             var multipart = new Multipart("mixed");
 

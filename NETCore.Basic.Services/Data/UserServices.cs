@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
+using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Services.Validation;
 using NETCore.Basic.Util.Crypto;
+using NETCore.Basic.Util.Extentions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +25,10 @@ namespace NETCore.Basic.Services.Data
         IQueryable<User> Get();
         IQueryable<User> Get(Expression<Func<User, bool>> filter);
         User Get(int id);
+        HATEOASResult<User> GetHateoas(int id);
+        bool Update(User user, out List<ValidationFailure> errors);
+        void Delete(int id);
+
         PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize);
 
     }
@@ -67,13 +74,42 @@ namespace NETCore.Basic.Services.Data
 
         public User Get(int id) => _repository.Get(id);
 
+        public void Delete(int id)
+        {
+            var ctxUser = Get(id);
+
+            _repository.Delete(ctxUser);
+            _repository.SaveChanges();
+        }
+
+        public bool Update(User user, out List<ValidationFailure> errors)
+        {
+            var validationResult = _validationRules.Validate(user);
+            errors = validationResult.Errors;
+
+            if (!validationResult.IsValid && validationResult.Errors.Any()) return false;
+
+            user.Password = _hashingService.ComputeHash(user.Password);
+            var ctxUsr = _repository.Update(user);
+            _repository.SaveChanges();
+            return !user.Equals(ctxUsr);
+        }
+
         public IQueryable<User> Get(Expression<Func<User, bool>> filter) => _repository.Get(filter);
 
         public PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize)
         {
             var mappedList = _mapper.ProjectTo<OutputUser>(_repository.Get(), typeof(OutputUser));
 
-           return new PaginatedList<OutputUser>(mappedList, uriService, route, pageIndex, pageSize);
+            return new PaginatedList<OutputUser>(mappedList, uriService, route, pageIndex, pageSize);
+        }
+
+        public HATEOASResult<User> GetHateoas(int id)
+        {
+            var user = Get(id);
+            var hateoas = new HATEOASResult<User>(user);
+
+            return hateoas;
         }
     }
 }
