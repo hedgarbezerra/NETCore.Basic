@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NETCore.Basic.Repository\NETCore.Basic.Repository.csproj" />
+    <ProjectReference Include="..\NETCore.Basic.Services\NETCore.Basic.Services.csproj" />
   </ItemGroup>
 
 </Project>

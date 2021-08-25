@@ -1,10 +1,12 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NETCore.Basic.Tests.Services.DataServices
 {
-    class LoggingServiceTest
+    [TestFixture]
+    public class LoggingServiceTest
     {
     }
 }
