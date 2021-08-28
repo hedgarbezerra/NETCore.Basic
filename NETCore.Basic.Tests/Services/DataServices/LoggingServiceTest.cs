@@ -21,6 +21,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
     {
         private Mock<IRepository<EventLog>> mqRepository;
         private Mock<ILocalFileHandler> mqFileHandler;
+        private Mock<IUriService> mqUriService;
         private LoggingService service;
 
         [SetUp]
@@ -28,7 +29,16 @@ namespace NETCore.Basic.Tests.Services.DataServices
         {
             mqFileHandler = new Mock<ILocalFileHandler>();
             mqRepository = new Mock<IRepository<EventLog>>();
-            service = new LoggingService(mqRepository.Object, mqFileHandler.Object);
+            mqUriService = new Mock<IUriService>();
+            service = new LoggingService(mqRepository.Object, mqUriService.Object, mqFileHandler.Object);
+        }
+
+        [TearDown]
+        public void TearDownMocks()
+        {
+            mqFileHandler.Reset();
+            mqRepository.Reset();
+            mqUriService.Reset();
         }
 
         [Test]
@@ -50,6 +60,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
         {
             Assert.Throws<DirectoryNotFoundException>(() => service.DeleteFileLogs(path));
         }
+
         [Test]
         public void DeleteFileLogs_PathIsNull_ThrowsException()
         {
@@ -166,7 +177,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
 
             mqRepository.Setup(r => r.Get()).Returns(list.AsQueryable());
 
-            var paginatedResult = service.GetPaginatedList(new Mock<IUriService>().Object, route, index, size);
+            var paginatedResult = service.GetPaginatedList(route, index, size);
 
             Assert.AreEqual(paginatedResult.Data.Count, size);
             Assert.AreEqual(paginatedResult.PageSize, size);
@@ -183,7 +194,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
             mqRepository.Setup(r => r.Get()).Returns(list.AsQueryable());
             int index = 1, size = 1;
 
-            var paginatedResult = service.GetPaginatedList(new Mock<IUriService>().Object, "", index, size);
+            var paginatedResult = service.GetPaginatedList("", index, size);
 
             Assert.AreEqual(paginatedResult.Data.Count, 0);
             Assert.AreEqual(paginatedResult.PageSize, size);

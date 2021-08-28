@@ -29,7 +29,7 @@ namespace NETCore.Basic.Services.Data
         bool Update(User user, out List<ValidationFailure> errors);
         void Delete(int id);
 
-        PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize);
+        PaginatedList<OutputUser> GetPaginatedList(string route, int pageIndex, int pageSize);
 
     }
     public class UserServices : IUserServices
@@ -38,13 +38,15 @@ namespace NETCore.Basic.Services.Data
         public IRepository<User> _repository { get; }
         public IHashing _hashingService { get; }
         public IMapper _mapper { get; }
+        public IUriService _uriService { get; }
 
-        public UserServices(IValidator<User> validationRules, IRepository<User> repository, IHashing hashingService, IMapper mapper)
+        public UserServices(IValidator<User> validationRules, IRepository<User> repository, IHashing hashingService, IMapper mapper, IUriService uriService)
         {
             _validationRules = validationRules;
             _repository = repository;
             _hashingService = hashingService;
             _mapper = mapper;
+            _uriService = uriService;
         }
 
 
@@ -73,6 +75,7 @@ namespace NETCore.Basic.Services.Data
         public IQueryable<User> Get() => _repository.Get();
 
         public User Get(int id) => _repository.Get(id);
+        public IQueryable<User> Get(Expression<Func<User, bool>> filter) => _repository.Get(filter);
 
         public void Delete(int id)
         {
@@ -96,21 +99,27 @@ namespace NETCore.Basic.Services.Data
             return !user.Equals(ctxUsr);
         }
 
-        public IQueryable<User> Get(Expression<Func<User, bool>> filter) => _repository.Get(filter);
-
-        public PaginatedList<OutputUser> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize)
+        public PaginatedList<OutputUser> GetPaginatedList(string route, int pageIndex, int pageSize)
         {
             var mappedList = _mapper.ProjectTo<OutputUser>(_repository.Get(), typeof(OutputUser));
 
-            return new PaginatedList<OutputUser>(mappedList, uriService, route, pageIndex, pageSize);
+            return new PaginatedList<OutputUser>(mappedList, _uriService, route, pageIndex, pageSize);
         }
 
         public HATEOASResult<User> GetHateoas(int id)
         {
             var user = Get(id);
-            var hateoas = new HATEOASResult<User>(user);
+            if (user is null) return null;
 
+            var hateoas = new HATEOASResult<User>(user);
+            AddLinksHATEOAS(hateoas, id);
             return hateoas;
+        }
+        private void AddLinksHATEOAS<T>(HATEOASResult<T> hateoas, int id) where T : class
+        {
+            hateoas.AddLink("get-user", _uriService.GetUri($"/api/users/get/{id}"), Method.GET);
+            hateoas.AddLink("update-user", _uriService.GetUri($"/api/users/get/{id}"), Method.PUT);
+            hateoas.AddLink("delete-user", _uriService.GetUri($"/api/users/delete/{id} "), Method.DELETE);
         }
     }
 }

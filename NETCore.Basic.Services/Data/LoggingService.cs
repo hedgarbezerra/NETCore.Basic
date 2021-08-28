@@ -16,19 +16,21 @@ namespace NETCore.Basic.Services.Data
         IQueryable<EventLog> Get();
         IQueryable<EventLog> Get(Expression<Func<EventLog, bool>> filter);
         EventLog Get(int id);
-        PaginatedList<EventLog> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize);
+        PaginatedList<EventLog> GetPaginatedList(string route, int pageIndex, int pageSize);
         bool DeleteFileLogs(string folderPath);
 
     }
     public class LoggingService : ILoggingService
     {
-        public LoggingService(IRepository<EventLog> repository, ILocalFileHandler fileHandler)
+        public LoggingService(IRepository<EventLog> repository, IUriService uriService, ILocalFileHandler fileHandler)
         {
             _repository = repository;
+            _uriService = uriService;
             _fileHandler = fileHandler;
         }
 
         public IRepository<EventLog> _repository { get; }
+        public IUriService _uriService { get; }
         public ILocalFileHandler _fileHandler { get; }
 
         public bool DeleteFileLogs(string folderPath)
@@ -52,7 +54,7 @@ namespace NETCore.Basic.Services.Data
 
         public EventLog Get(int id) => _repository.Get(id);
 
-        public PaginatedList<EventLog> GetPaginatedList(IUriService uriService, string route, int pageIndex, int pageSize) =>
-            new PaginatedList<EventLog>(_repository.Get(), uriService, route, pageIndex, pageSize);
+        public PaginatedList<EventLog> GetPaginatedList(string route, int pageIndex, int pageSize) =>
+            new PaginatedList<EventLog>(_repository.Get(), _uriService, route, pageIndex, pageSize);
     }
 }

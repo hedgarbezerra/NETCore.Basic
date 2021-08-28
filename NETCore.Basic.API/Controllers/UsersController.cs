@@ -62,7 +62,7 @@ namespace NETCore.Basic.API.Controllers
             try
             {
                 var route = Request.Path.Value;
-                var paginatedList = _userService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
+                var paginatedList = _userService.GetPaginatedList(route, query.PageIndex, query.PageSize);
 
                 if (paginatedList.TotalCount <= 0)
                     return NotFound();
@@ -93,8 +93,8 @@ namespace NETCore.Basic.API.Controllers
                 {
                     var newId = Convert.ToInt32(id);
                     var hateoasResult = _userService.GetHateoas(newId);
-                    AddLinksHATEOAS(hateoasResult, newId);
-                    result.Add(hateoasResult);
+
+                    if(hateoasResult != null) result.Add(hateoasResult);
                 }
 
                 return Ok(result);
@@ -179,12 +179,6 @@ namespace NETCore.Basic.API.Controllers
 
             return Ok(response);
         }
-
-        private void AddLinksHATEOAS<T>(HATEOASResult<T> hateoas, int id) where T : class
-        {
-            hateoas.AddLink("self", _uriService.GetUri($"/api/users/{Method.GET}/{id}"), Method.GET);
-            hateoas.AddLink("update-user", _uriService.GetUri($"/api/users/{nameof(Put)}/{id}"), Method.PUT);
-            hateoas.AddLink("delete-user", _uriService.GetUri($"/api/users/{nameof(Delete)}/{id} "), Method.DELETE);
-        }
+        
     }
 }

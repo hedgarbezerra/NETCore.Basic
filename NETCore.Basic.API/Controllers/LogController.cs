@@ -21,9 +21,9 @@ namespace NETCore.Basic.API.Controllers
     {
         public IUriService _uriService { get; }
         public ILoggingService _loggingService { get; }
-        public IHostingEnvironment _env { get; }
+        public IWebHostEnvironment _env { get; }
 
-        public LogController(IUriService uriService, ILoggingService loggingService, IHostingEnvironment env)
+        public LogController(IUriService uriService, ILoggingService loggingService, IWebHostEnvironment env)
         {
             _uriService = uriService;
             _loggingService = loggingService;
@@ -38,7 +38,7 @@ namespace NETCore.Basic.API.Controllers
         public IActionResult GetLog([FromQuery] PaginationFilter query)
         {
             var route = Request.Path.Value;
-            var paginatedList = _loggingService.GetPaginatedList(_uriService, route, query.PageIndex, query.PageSize);
+            var paginatedList = _loggingService.GetPaginatedList(route, query.PageIndex, query.PageSize);
 
             if (paginatedList.TotalCount <= 0)
                 return NotFound();
