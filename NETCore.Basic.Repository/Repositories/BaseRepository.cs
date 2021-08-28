@@ -44,7 +44,7 @@ namespace NETCore.Basic.Repository.Repositories
             return dados;
         }
 
-        public T Get(int id) => _dbContext.Set<T>().Find(id);
+        public T Get(int id) => id <= 0 ? throw new ArgumentException("ID must be greater than 0.") : _dbContext.Set<T>().Find(id);
 
         public DbContext GetDbContext() => _dbContext;
 

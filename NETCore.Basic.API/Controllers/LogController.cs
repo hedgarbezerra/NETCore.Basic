@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace NETCore.Basic.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrator")]
+    //[Authorize(Roles = "Administrator")]
     [ApiController]
     public class LogController : ControllerBase
     {
@@ -46,6 +46,20 @@ namespace NETCore.Basic.API.Controllers
             return Ok(paginatedList);
         }
 
+        [HttpGet]
+        [Route("get/{id}")]
+        [ProducesResponseType(typeof(PaginatedList<EventLog>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        public IActionResult GetById([FromQuery] int id)
+        {
+            EventLog result = _loggingService.Get(id);
+
+            if (result is null)
+                return NotFound();
+
+            return Ok(result);
+        }
 
         [HttpDelete]
         [Route("cleanfilelog")]

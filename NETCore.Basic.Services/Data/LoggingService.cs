@@ -35,8 +35,11 @@ namespace NETCore.Basic.Services.Data
         {
             DirectoryInfo dir = new DirectoryInfo(folderPath);
             bool result = false;
+            var files = dir.GetFiles();
 
-            foreach (var file in dir.GetFiles())
+            if (files.Count() <= 0) return true;
+
+            foreach (var file in files)
             {
                 result = _fileHandler.Delete(file);
             }

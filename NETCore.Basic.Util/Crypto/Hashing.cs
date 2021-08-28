@@ -8,6 +8,7 @@ namespace NETCore.Basic.Util.Crypto
     public interface IHashing
     {
         string ComputeHash(string plainText, byte[] saltBytes = null);
+        string ComputeHash(string plainText);
         bool VerifyHash(string plainText, string hashValue);
     }
     /// <summary>
@@ -25,6 +26,21 @@ namespace NETCore.Basic.Util.Crypto
         /// <param name="plainText">string com texto limpo</param>
         /// <param name="saltBytes">salt bytes opcionais, caso não seja preenchido será gerado</param>
         /// <returns>string a partir do parâmetro plainText hasheada com salt inserido ou gerado</returns>
+        public string ComputeHash(string plainText)
+        {
+                int minSaltSize = 4;
+                int maxSaltSize = 8;
+
+                Random random = new Random();
+                int saltSize = random.Next(minSaltSize, maxSaltSize);
+
+                var saltBytes = new byte[saltSize];
+
+
+                _rngProvider.GetNonZeroBytes(saltBytes);
+
+            return ComputeHash(plainText, saltBytes);
+        }
         public string ComputeHash(string plainText, byte[] saltBytes = null)
         {
             if (saltBytes == null)

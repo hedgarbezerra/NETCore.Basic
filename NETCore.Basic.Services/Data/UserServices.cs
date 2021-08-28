@@ -77,6 +77,7 @@ namespace NETCore.Basic.Services.Data
         public void Delete(int id)
         {
             var ctxUser = Get(id);
+            if (ctxUser is null) throw new Exception("User not found");
 
             _repository.Delete(ctxUser);
             _repository.SaveChanges();

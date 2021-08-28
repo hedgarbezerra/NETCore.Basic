@@ -46,5 +46,25 @@ namespace NETCore.Basic.Domain.Entities
             set { Properties = value.ToString(); }
         }
         public DateTime CreatedTime { get; set; }
+        public EventLog()
+        {
+
+        }
+
+        public EventLog(string message, string exception, LogLevel logLevel)
+        {
+            Message = message;
+            Exception = exception;
+            LogLevel = logLevel;
+        }
+        public EventLog(string message, string messageTemplate, string exception, string properties, LogLevel logLevel)
+        {
+            Message = message;
+            MessageTemplate = messageTemplate;
+            Exception = exception;
+            Properties = properties;
+            LogLevel = logLevel;
+        }
     }
+
 }
