@@ -44,10 +44,8 @@ namespace NETCore.Basic.Tests.Services.DataServices
         [Test]
         public void DeleteFileLogs_FolderExists_ReturnTrue()
         {
-            mqFileHandler.Setup(c => c.Delete(It.IsAny<FileInfo>()))
-                .Returns(true);
-
-            string path = "C:\\Users\\hedga\\source\\repos\\hedgarbezerra\\NETCore.Basic\\NETCore.Basic.API\\wwwroot\\logs";
+            mqFileHandler.Setup(c => c.Delete(It.IsAny<FileInfo>())).Returns(true);
+            string path = Path.Combine(AppContext.BaseDirectory, "..", "..","..", "..", "NETCore.Basic.API", "wwwroot", "logs"); 
             var result = service.DeleteFileLogs(path);
 
             Assert.IsTrue(result);

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -153,6 +154,7 @@ namespace NETCore.Basic.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             #region Setting up exception handling
             if (env.IsDevelopment())
             {
@@ -196,9 +198,6 @@ namespace NETCore.Basic.API
                            autoCreateSqlTable: true,
                            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning,
                            tableName: Configuration["Logging:Table"])
-                        .WriteTo.File(env.WebRootPath + "\\logs\\log_.txt",
-                            rollingInterval: RollingInterval.Minute,
-                            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information)
                        .CreateLogger();
 
             app.UseStaticFiles(new StaticFileOptions
