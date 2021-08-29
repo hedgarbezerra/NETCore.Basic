@@ -1,0 +1,2 @@
+2021-08-25 21:13:45.720 -03:00 [INF] Authorization failed.
+2021-08-25 21:13:46.003 -03:00 [INF] AuthenticationScheme: Bearer was challenged.
