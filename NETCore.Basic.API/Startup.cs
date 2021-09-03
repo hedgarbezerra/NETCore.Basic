@@ -52,10 +52,13 @@ namespace NETCore.Basic.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                  .AddScoped<IUrlHelper>(x => x.GetRequiredService<IUrlHelperFactory>()
                  .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
+
             services.AddDirectoryBrowser();
+
             services.AddControllers()
                 .AddJsonOptions(ops =>
                 {
