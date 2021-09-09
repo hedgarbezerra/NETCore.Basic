@@ -28,16 +28,16 @@ namespace NETCore.Basic.Util.Crypto
         /// <returns>string a partir do parâmetro plainText hasheada com salt inserido ou gerado</returns>
         public string ComputeHash(string plainText)
         {
-                int minSaltSize = 4;
-                int maxSaltSize = 8;
+            int minSaltSize = 4;
+            int maxSaltSize = 8;
 
-                Random random = new Random();
-                int saltSize = random.Next(minSaltSize, maxSaltSize);
+            Random random = new Random();
+            int saltSize = random.Next(minSaltSize, maxSaltSize);
 
-                var saltBytes = new byte[saltSize];
+            var saltBytes = new byte[saltSize];
 
 
-                _rngProvider.GetNonZeroBytes(saltBytes);
+            _rngProvider.GetNonZeroBytes(saltBytes);
 
             return ComputeHash(plainText, saltBytes);
         }
