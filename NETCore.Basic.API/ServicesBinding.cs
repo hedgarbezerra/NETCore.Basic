@@ -39,6 +39,7 @@ namespace NETCore.Basic.API
             services.AddSingleton<IFileHandler<Stream>, FileHandler>();
             services.AddSingleton<IHTMLHandler, HTMLHandler>();
             services.AddSingleton<ILocalFileHandler, FileHandler>();
+            services.AddSingleton<IZipHandler, ZipHandler>();
             services.AddSingleton<IHashing, Hashing>();
             services.AddSingleton<IEncryption, Encryption>();
             services.AddSingleton<IUriService>(o =>

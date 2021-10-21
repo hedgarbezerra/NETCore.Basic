@@ -10,7 +10,6 @@ using System.Text;
 namespace NETCore.Basic.Tests
 {
 
-    [TestFixture]
     public class TestExampleTests
     {
         private MockRepository mockRepository;
@@ -24,12 +23,7 @@ namespace NETCore.Basic.Tests
 
         }
 
-        private TestExample CreateTestExample()
-        {
-            return new TestExample();
-        }
 
-        [Test]
         public void TestMethod1()
         {
             // Arrange
