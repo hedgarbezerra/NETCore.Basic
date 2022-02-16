@@ -51,8 +51,8 @@ namespace NETCore.Basic.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<Example>(Configuration.GetSection("AutoBindExample"));
             services.AddHttpContextAccessor();
-
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                  .AddScoped<IUrlHelper>(x => x.GetRequiredService<IUrlHelperFactory>()
                  .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
