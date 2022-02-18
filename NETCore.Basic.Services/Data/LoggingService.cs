@@ -3,11 +3,9 @@ using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Util.Helper;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NETCore.Basic.Services.Data
 {
@@ -48,7 +46,7 @@ namespace NETCore.Basic.Services.Data
             return result;
         }
 
-        public IQueryable<EventLog> Get() =>_repository.Get();
+        public IQueryable<EventLog> Get() => _repository.Get();
 
         public IQueryable<EventLog> Get(Expression<Func<EventLog, bool>> filter) => _repository.Get(filter);
 

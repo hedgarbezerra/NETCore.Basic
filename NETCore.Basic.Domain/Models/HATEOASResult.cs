@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Domain.Models
 {
@@ -24,7 +23,7 @@ namespace NETCore.Basic.Domain.Models
         public Method Method { get; set; }
     }
 
-    public class HATEOASResult<T> where T:class
+    public class HATEOASResult<T> where T : class
     {
         public T Data { get; set; }
         public List<HATEOASLink> Links { get; set; }
@@ -37,7 +36,7 @@ namespace NETCore.Basic.Domain.Models
             Data = data;
             Links = links;
         }
-        public HATEOASResult(T data) :this()
+        public HATEOASResult(T data) : this()
         {
             Data = data;
         }

@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Services.Data;
 using NETCore.Basic.Services.Pagination;
-using NETCore.Basic.Util.Helper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace NETCore.Basic.API.Controllers
 {

@@ -41,7 +41,7 @@ namespace NETCore.Basic.Domain.Entities
         public string Properties { get; set; }
         [JsonIgnore]
         public XElement XmlContent
-    {
+        {
             get { return XElement.Parse(Properties); }
             set { Properties = value.ToString(); }
         }

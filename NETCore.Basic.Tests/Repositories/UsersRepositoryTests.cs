@@ -1,13 +1,9 @@
-﻿using NUnit.Framework;
-using NETCore.Basic.Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NETCore.Basic.Repository.DataContext;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NETCore.Basic.Domain.Entities;
+using NETCore.Basic.Repository.DataContext;
+using NUnit.Framework;
+using System;
 using System.Linq;
-using Moq;
 
 namespace NETCore.Basic.Repository.Repositories.Tests
 {

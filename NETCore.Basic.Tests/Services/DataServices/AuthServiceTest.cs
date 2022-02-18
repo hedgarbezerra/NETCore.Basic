@@ -1,11 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using NETCore.Basic.Domain.Entities;
+﻿using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Services.Data;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace NETCore.Basic.Tests.Services.DataServices
 {
@@ -24,7 +22,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
         [Test]
         public void GenerateToken_ValidToken()
         {
-            User user = new User() 
+            User user = new User()
             {
                 Email = "user123@gmail.com",
                 Username = "user123",

@@ -1,13 +1,9 @@
-﻿using NUnit.Framework;
-using NETCore.Basic.Repository.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NETCore.Basic.Repository.DataContext;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NETCore.Basic.Domain.Entities;
+using NETCore.Basic.Repository.DataContext;
+using NUnit.Framework;
+using System;
 using System.Linq;
-using NETCore.Basic.Domain.Interfaces;
 
 namespace NETCore.Basic.Repository.Repositories.Tests
 {
@@ -204,7 +200,7 @@ namespace NETCore.Basic.Repository.Repositories.Tests
 
         private void AddLogsToContext()
         {
-            _context.Logs.Add(new EventLog { Id = 1, Message = "Error 1", CreatedTime = new DateTime(2021, 5, 10)});
+            _context.Logs.Add(new EventLog { Id = 1, Message = "Error 1", CreatedTime = new DateTime(2021, 5, 10) });
             _context.Logs.Add(new EventLog { Id = 2, Message = "Error 2", CreatedTime = new DateTime(2021, 8, 10) });
             _context.SaveChanges();
         }

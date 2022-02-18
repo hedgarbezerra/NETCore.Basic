@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NETCore.Basic.Util.Crypto;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Util.Configuration
 {

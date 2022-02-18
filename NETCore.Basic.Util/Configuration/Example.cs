@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NETCore.Basic.Util.Configuration
+﻿namespace NETCore.Basic.Util.Configuration
 {
     /// <summary>
     /// .NET core Auto binding properties

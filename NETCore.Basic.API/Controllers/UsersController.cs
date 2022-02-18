@@ -1,25 +1,17 @@
 ﻿using AutoMapper;
 using FluentValidation.Results;
-using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
-using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.Data;
 using NETCore.Basic.Services.External;
 using NETCore.Basic.Services.Pagination;
-using NETCore.Basic.Tests.Services.External;
-using NETCore.Basic.Util.Crypto;
-using NETCore.Basic.Util.Extentions;
 using NETCore.Basic.Util.Helper;
-using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace NETCore.Basic.API.Controllers
@@ -94,7 +86,7 @@ namespace NETCore.Basic.API.Controllers
                     var newId = Convert.ToInt32(id);
                     var hateoasResult = _userService.GetHateoas(newId);
 
-                    if(hateoasResult != null) result.Add(hateoasResult);
+                    if (hateoasResult != null) result.Add(hateoasResult);
                 }
 
                 return Ok(result);
@@ -179,6 +171,6 @@ namespace NETCore.Basic.API.Controllers
 
             return Ok(response);
         }
-        
+
     }
 }

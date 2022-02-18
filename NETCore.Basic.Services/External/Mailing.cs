@@ -4,11 +4,8 @@ using MimeKit;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
-using NETCore.Basic.Util.Helper;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace NETCore.Basic.Tests.Services.External
 {

@@ -1,42 +1,27 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NETCore.Basic.Repository.DataContext;
-using NETCore.Basic.Services;
-using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
-using NETCore.Basic.Util.Helper;
 using Newtonsoft.Json;
 using Serilog;
-using Serilog.Context;
-using Serilog.Sinks.MSSqlServer;
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace NETCore.Basic.API
 {
@@ -73,7 +58,7 @@ namespace NETCore.Basic.API
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             #region Swagger documentation setup
-            
+
             services.AddSwaggerGen(s =>
             {
                 s.SwaggerDoc("v1", new OpenApiInfo
@@ -157,7 +142,7 @@ namespace NETCore.Basic.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+
             #region Setting up exception handling
             if (env.IsDevelopment())
             {

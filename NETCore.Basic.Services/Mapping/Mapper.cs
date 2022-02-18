@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using NETCore.Basic.Domain.Entities;
-using NETCore.Basic.Domain.Models.Users;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Services.Mapping
 {

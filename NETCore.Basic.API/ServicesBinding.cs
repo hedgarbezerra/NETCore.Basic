@@ -16,10 +16,8 @@ using NETCore.Basic.Tests.Services.External;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
 using NETCore.Basic.Util.Helper;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NETCore.Basic.API
 {

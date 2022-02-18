@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NETCore.Basic.Domain.Models
+﻿namespace NETCore.Basic.Domain.Models
 {
     public class PaginationFilter
     {

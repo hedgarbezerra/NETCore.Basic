@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Services.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NETCore.Basic.API.Controllers
 {
@@ -41,7 +39,7 @@ namespace NETCore.Basic.API.Controllers
         private IMapping _mapping;
         public DIExample3Controller(IServiceProvider serviceProvider)
         {
-            _mapping = (ExampleMapping)serviceProvider.GetService (typeof(IMapping));
+            _mapping = (ExampleMapping)serviceProvider.GetService(typeof(IMapping));
         }
 
     }

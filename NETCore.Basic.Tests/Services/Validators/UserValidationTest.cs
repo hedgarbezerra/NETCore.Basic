@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NETCore.Basic.Tests.Services.Validators
 {
@@ -32,7 +31,7 @@ namespace NETCore.Basic.Tests.Services.Validators
         [Test]
         public void Validate_ValidUser_ValidationValidWithNoErrors()
         {
-            var user = new User { Id = 1, Username = "User 1", Email = "hueheu@hotmail.com", Password = "@!913iHeda",  RegistredAt = new DateTime(2021, 02, 19) };
+            var user = new User { Id = 1, Username = "User 1", Email = "hueheu@hotmail.com", Password = "@!913iHeda", RegistredAt = new DateTime(2021, 02, 19) };
             var result = validator.TestValidate(user);
 
             result.ShouldNotHaveValidationErrorFor(x => x.Email);

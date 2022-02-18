@@ -1,10 +1,8 @@
 ﻿using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models.Helpers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 
 namespace NETCore.Basic.Util.Helper
 {

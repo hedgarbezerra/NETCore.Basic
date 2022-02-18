@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Moq;
-using Moq.Language.Flow;
+﻿using Moq;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Services.Data;
@@ -12,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NETCore.Basic.Tests.Services.DataServices
 {
@@ -45,7 +42,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
         public void DeleteFileLogs_FolderExists_ReturnTrue()
         {
             mqFileHandler.Setup(c => c.Delete(It.IsAny<FileInfo>())).Returns(true);
-            string path = Path.Combine(AppContext.BaseDirectory, "..", "..","..", "..", "NETCore.Basic.API", "wwwroot", "logs"); 
+            string path = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "NETCore.Basic.API", "wwwroot", "logs");
             var result = service.DeleteFileLogs(path);
 
             Assert.IsTrue(result);
@@ -132,7 +129,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
         [TestCase(5)]
         public void Get_FilterLogById_ReturnsEventLog(int id)
         {
-            mqRepository.Setup(r => r.Get(It.IsAny<int>())).Returns(new EventLog() { Id  = id , LogLevel = LogLevel.Warning, Message = "Erro" , CreatedTime = DateTime.UtcNow});
+            mqRepository.Setup(r => r.Get(It.IsAny<int>())).Returns(new EventLog() { Id = id, LogLevel = LogLevel.Warning, Message = "Erro", CreatedTime = DateTime.UtcNow });
             var logItem = service.Get(id);
 
             Assert.IsNotNull(logItem);

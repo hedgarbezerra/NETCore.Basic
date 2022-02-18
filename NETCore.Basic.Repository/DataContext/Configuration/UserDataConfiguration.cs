@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NETCore.Basic.Domain.Entities;
-using System;
 
 namespace NETCore.Basic.Repository.DataContext.Configuration
 {

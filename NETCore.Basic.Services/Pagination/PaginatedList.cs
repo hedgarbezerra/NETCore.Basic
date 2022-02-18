@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NETCore.Basic.Services.Pagination
 {
@@ -24,7 +23,7 @@ namespace NETCore.Basic.Services.Pagination
             PageSize = (int)pageSize;
             TotalCount = source.Count();
             TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
-            NextPage =  HasNextPage ? uriService.GetPageUri(pageIndex + 1, PageSize, route) : null;
+            NextPage = HasNextPage ? uriService.GetPageUri(pageIndex + 1, PageSize, route) : null;
             PreviousPage = HasPreviousPage ? uriService.GetPageUri(pageIndex - 1, PageSize, route) : null;
             Data = source.Skip((PageIndex - 1) * PageSize).Take(PageSize).ToList();
         }

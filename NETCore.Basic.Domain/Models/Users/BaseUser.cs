@@ -1,7 +1,5 @@
 ﻿using NETCore.Basic.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Domain.Models.Users
 {

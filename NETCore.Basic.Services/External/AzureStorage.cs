@@ -4,10 +4,7 @@ using Azure.Storage.Blobs.Models;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Util.Helper;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NETCore.Basic.Services.External
 {
@@ -25,7 +22,7 @@ namespace NETCore.Basic.Services.External
 
     }
 
-    public class AzureStorage: IAzureStorage
+    public class AzureStorage : IAzureStorage
     {
         private readonly BlobContainerClient _container;
         public AzureStorage(string connectionString, string nomeContainer, ILocalFileHandler fileHandler)
@@ -66,7 +63,7 @@ namespace NETCore.Basic.Services.External
         }
         public AsyncPageable<BlobItem> GetAllAsync()
         {
-            return  _container.GetBlobsAsync();
+            return _container.GetBlobsAsync();
         }
         public Response<BlobContentInfo> Upload(TransaferenceFile file)
         {

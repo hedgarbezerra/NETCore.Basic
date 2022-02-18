@@ -3,7 +3,6 @@ using FluentValidation.Results;
 using Moq;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
-using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
 using NETCore.Basic.Services.Data;
 using NETCore.Basic.Services.Pagination;
@@ -12,10 +11,8 @@ using NETCore.Basic.Util.Crypto;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NETCore.Basic.Tests.Services.DataServices
 {
@@ -57,14 +54,14 @@ namespace NETCore.Basic.Tests.Services.DataServices
             var result = _userServices.Add(user, out List<ValidationFailure> resultList);
 
             Assert.IsTrue(result);
-            Assert.That(resultList.Count <=0);
+            Assert.That(resultList.Count <= 0);
         }
 
         [Test]
         public void Add_WithInvalidUser_ReturnFalse()
         {
             var user = new User() { Username = "username", Role = Role.Administrator, Password = "password", Id = 0 };
-            var erros = new List<ValidationFailure>() 
+            var erros = new List<ValidationFailure>()
             {
                 new ValidationFailure("Email", "ERRO 1"),
                 new ValidationFailure("Email", "ERRO 2")
@@ -176,7 +173,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
         [Test]
         public void Get_ExistingUsers_ReturnsQueryableList()
         {
-            var list = new List<User>() 
+            var list = new List<User>()
             {
                 new User() { Username = "user1", Role = Role.Administrator, Password = "password" },
                 new User() { Username = "user2", Role = Role.Common, Password = "password" }
@@ -188,7 +185,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
             Assert.IsNotNull(result);
             Assert.That(result.Count() >= 0);
         }
-       
+
         [Test]
         public void Get_NoExistingExistingUsers_ReturnsEmptyQueryableList()
         {
@@ -201,7 +198,7 @@ namespace NETCore.Basic.Tests.Services.DataServices
             Assert.That(result.Count() == 0);
 
         }
-        
+
         [Test]
         [TestCase(2)]
         [TestCase(3)]
@@ -223,13 +220,13 @@ namespace NETCore.Basic.Tests.Services.DataServices
             Assert.AreEqual(resultUser.Id, idUser);
 
         }
-       
+
         [Test]
         public void GetHateoas_UserFound_ReturnsNewHATEOASResult()
         {
             var user = new User() { Id = 1, Username = "username", Role = Role.Administrator, Password = "password" };
             _mqRepository.Setup((c) => c.Get(It.IsAny<int>())).Returns(user);
-            _mqUriService.Setup(c => c.GetUri(It.IsAny<string>())).Returns(new Uri("http://url/mock/"+user.Id));
+            _mqUriService.Setup(c => c.GetUri(It.IsAny<string>())).Returns(new Uri("http://url/mock/" + user.Id));
 
             var hateoasResult = _userServices.GetHateoas(user.Id);
 

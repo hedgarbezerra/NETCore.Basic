@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Mvc;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Domain.Interfaces;
 using NETCore.Basic.Domain.Models;
 using NETCore.Basic.Domain.Models.Users;
-using NETCore.Basic.Services.Mapping;
 using NETCore.Basic.Services.Pagination;
 using NETCore.Basic.Services.Validation;
 using NETCore.Basic.Util.Crypto;
@@ -14,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NETCore.Basic.Services.Data
 {

@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using NETCore.Basic.Domain.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Services.Pagination
 {
     public interface IUriService
     {
-        Uri GetPageUri(int pageIndex, int pageSize,  string route);
+        Uri GetPageUri(int pageIndex, int pageSize, string route);
         Uri GetUri(string route);
     }
     public class UriService : IUriService
@@ -28,7 +25,7 @@ namespace NETCore.Basic.Services.Pagination
 
         public Uri GetUri(string route)
         {
-            return  new Uri(string.Concat(_baseUri, route));
+            return new Uri(string.Concat(_baseUri, route));
         }
     }
 }

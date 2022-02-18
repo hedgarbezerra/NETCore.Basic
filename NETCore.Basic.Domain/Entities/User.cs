@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Text;
 
 namespace NETCore.Basic.Domain.Entities
 {
-    public class User 
+    public class User
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -17,7 +14,7 @@ namespace NETCore.Basic.Domain.Entities
     }
     public enum Role
     {
-        Administrator ,
+        Administrator,
         Common,
         Manager
     }

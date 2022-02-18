@@ -1,9 +1,5 @@
 ﻿using NETCore.Basic.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace NETCore.Basic.Util.Helper
 {
@@ -24,7 +20,7 @@ namespace NETCore.Basic.Util.Helper
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
                 DeleteInnerFolder(directoryInfo);
-               
+
                 return true;
             }
             catch
@@ -84,7 +80,7 @@ namespace NETCore.Basic.Util.Helper
                 //}
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
@@ -133,7 +129,7 @@ namespace NETCore.Basic.Util.Helper
                 file.Delete();
                 return !Read(file.FullName, out Stream outFile);
             }
-            catch 
+            catch
             {
                 return false;
             }

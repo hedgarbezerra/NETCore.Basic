@@ -1,18 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Configuration;
 using NETCore.Basic.Domain.Entities;
 using NETCore.Basic.Util.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NETCore.Basic.Repository.DataContext.Configuration
 {
     public sealed class EventLogConfiguration : DataConfiguration<EventLog>
     {
         public EventLogConfiguration()
-            :base()
+            : base()
         {
         }
 
