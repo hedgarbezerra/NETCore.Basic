@@ -25,6 +25,7 @@ using System.Text.Json.Serialization;
 
 namespace NETCore.Basic.API
 {
+    //bugabuga
     public class Startup
     {
         public IConfiguration Configuration { get; set; }
