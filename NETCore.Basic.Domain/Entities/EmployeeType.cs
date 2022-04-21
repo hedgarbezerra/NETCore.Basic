@@ -4,6 +4,14 @@ using System.Text;
 
 namespace NETCore.Basic.Domain.Entities
 {
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime RegisteredAt { get; set; }
+        public EmployeeType Type { get; set; }
+    }
     public abstract class EmployeeType : Enumeration
     {
         public static readonly EmployeeType Manager
@@ -30,7 +38,16 @@ namespace NETCore.Basic.Domain.Entities
 
             public override decimal BonusSize
             {
-                get { return 10m; }
+                get { return 100m; }
+            }
+        }
+        private class DirectorType : EmployeeType
+        {
+            public DirectorType() : base(0, "Director") { }
+
+            public override decimal BonusSize
+            {
+                get { return 1500m; }
             }
         }
     }

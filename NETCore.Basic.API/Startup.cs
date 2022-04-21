@@ -96,7 +96,6 @@ namespace NETCore.Basic.API
                             }
                         },
                         new string[] {}
-
                     }
                 });
             });

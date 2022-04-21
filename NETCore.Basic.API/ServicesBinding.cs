@@ -72,6 +72,7 @@ namespace NETCore.Basic.API
             services.AddDbContext<NetDbContext>(opt => opt.UseSqlServer(apiSettings.ConnectionString));
             services.AddScoped<IRepository<User>, UsersRepository>();
             services.AddScoped<IRepository<EventLog>, LogRepository>();
+            services.AddScoped<IRepository<Employee>, EmployeesRepository>();
 
             #endregion
             #region Services

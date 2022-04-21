@@ -14,13 +14,14 @@ namespace NETCore.Basic.Repository.DataContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // Migrations only works with this, somehow
-            //optionsBuilder.UseSqlServer("Data Source=HED-GAMING;Initial Catalog=NETCoreAPIDb;Integrated Security=True");
+            optionsBuilder.UseSqlServer("Data Source=HED-GAMING;Initial Catalog=NETCoreAPIDb;Integrated Security=True");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserDataConfiguration());
             builder.ApplyConfiguration(new EventLogConfiguration());
+            builder.ApplyConfiguration(new EmployeesConfiguration());
         }
         public DbSet<User> Users { get; set; }
         public DbSet<EventLog> Logs { get; set; }
