@@ -27,6 +27,7 @@ namespace NETCore.Basic.API
 {
     public class Startup
     {
+        //teste PR
         public IConfiguration Configuration { get; set; }
 
         public Startup(IConfiguration configuration)
