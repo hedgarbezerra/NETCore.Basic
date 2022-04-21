@@ -12,7 +12,7 @@ namespace NETCore.Basic.Domain.Entities
         public DateTime RegisteredAt { get; set; }
         public EmployeeType Type { get; set; }
     }
-    public abstract class EmployeeType : Enumeration
+    public class EmployeeType : Enumeration
     {
         public static readonly EmployeeType Manager
             = new ManagerType();
@@ -21,7 +21,7 @@ namespace NETCore.Basic.Domain.Entities
         protected EmployeeType(int value, string displayName) : base(value, displayName) { }
 
         //Definir prop de acordo com a regra de negócio que deverá ser aplicada à cada tipo
-        public abstract decimal BonusSize { get; }
+        public virtual decimal BonusSize { get; }
 
         private class ManagerType : EmployeeType
         {

@@ -31,13 +31,17 @@ namespace NETCore.Basic.Repository.DataContext.Configuration
             builder.Property(c => c.RegisteredAt)
                .HasColumnType("datetime")
                .HasColumnName("Registered")
-               .HasDefaultValue(DateTime.Now);
+               .HasDefaultValueSql("GetDate()");
 
-            builder.OwnsOne(a => a.Type);
-
-            builder.Property(a => a.Type.Value)
+            builder.OwnsOne(a => a.Type, tipo =>
+            {
+                tipo.Property(a => a.Value)
                 .HasColumnType("int")
                 .HasColumnName("EmployeeType");
+
+                tipo.Ignore(a => a.DisplayName);
+            });
+
         }
 
         protected override void ConfigurateFK(EntityTypeBuilder<Employee> builder)
