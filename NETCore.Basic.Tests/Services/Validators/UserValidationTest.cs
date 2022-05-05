@@ -38,6 +38,7 @@ namespace NETCore.Basic.Tests.Services.Validators
             result.ShouldNotHaveValidationErrorFor(x => x.Username);
             result.ShouldNotHaveValidationErrorFor(x => x.Password);
             Assert.IsTrue(result.IsValid);
+            Assert.Fail();
         }
 
         [Test]
