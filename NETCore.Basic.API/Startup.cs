@@ -163,17 +163,22 @@ namespace NETCore.Basic.API
             #endregion
 
             #region Setting up Azure Keyvault
-
-            if (env.IsProduction())
+            #region Configura Azure App Configurations
+            var appConfigurationsConnectionString = Configuration.GetConnectionString("AppConfig");
+            Configuration.AddAzureAppConfiguration((config) =>
             {
-                var sp = app.ApplicationServices;
-                var azureSettings = new AzureSettings(Configuration, sp.GetService<IEncryption>());
-                var builder = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", false, true)
-                   .AddAzureKeyVault(new AzureKeyVaultConfigurationOptions(azureSettings.KeyVaultURI, azureSettings.KeyVaultClientId, azureSettings.KeyVaultKey));
+                config.Connect(appConfigurationsConnectionString)
+                    .ConfigureRefresh(opt =>
+                    {
+                        opt.Register(AppConfiguration.AZURE_CONFIG_CACHE_SENTINEL, true);
+                        opt.SetCacheExpiration(AppConfiguration.AZURE_CONFIG_CACHE_EXPIRACY);
+                    });
 
-                Configuration = builder.Build();
-            }
+                config.Select(KeyFilter.Any, LabelFilter.Null);
+                config.Select(KeyFilter.Any, hostingEnvironment.EnvironmentName);
+            });
+
+            Services.AddAzureAppConfiguration();
             #endregion
 
             #region setting up logging and log browser visualization
