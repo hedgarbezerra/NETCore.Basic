@@ -13,10 +13,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NETCore.Basic.API.Configurations.Formatters;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
 using Newtonsoft.Json;
-using Serilog;
 using System;
 using System.IO;
 using System.Text;
@@ -44,12 +44,18 @@ namespace NETCore.Basic.API
 
             services.AddDirectoryBrowser();
 
-            services.AddControllers()
+            services.AddControllers(op =>
+            {
+                op.RespectBrowserAcceptHeader = true;
+                op.ReturnHttpNotAcceptable = true;
+                op.OutputFormatters.Add(new CsvFormatter());
+            })
+                .AddXmlSerializerFormatters()
                 .AddJsonOptions(ops =>
                 {
+                    ops.JsonSerializerOptions.PropertyNamingPolicy = null;
                     ops.JsonSerializerOptions.IgnoreReadOnlyProperties = false;
                     ops.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    ops.JsonSerializerOptions.IgnoreNullValues = false;
                     ops.JsonSerializerOptions.WriteIndented = true;
                     ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
