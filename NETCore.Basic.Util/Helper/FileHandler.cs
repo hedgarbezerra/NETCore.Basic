@@ -5,6 +5,8 @@ namespace NETCore.Basic.Util.Helper
 {
     public interface ILocalFileHandler : IFileHandler<Stream>
     {
+        bool Read(string path, out Stream file);
+        bool Write(Stream file, string path, string fileName);
         bool Delete(string path);
         bool Delete(FileInfo file);
         bool DeleteFolder(string path);
@@ -72,12 +74,6 @@ namespace NETCore.Basic.Util.Helper
             {
                 var bytes = File.ReadAllBytes(path);
                 file = new MemoryStream(bytes);
-                //using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                //{
-                //    byte[] bytes = new byte[file.Length];
-                //    file.Read(bytes, 0, (int)file.Length);
-                //    file.Write(bytes, 0, bytes.Length);
-                //}
                 return true;
             }
             catch
@@ -92,11 +88,6 @@ namespace NETCore.Basic.Util.Helper
                 var bytes = ByteArrayFromFile(file);
                 File.WriteAllBytes($@"{path}\\{fileName}", bytes);
 
-                //using (FileStream fileStream = new FileStream($@"{path}\\{fileName}", FileMode.Create))
-                //{
-                //    file.CopyTo(fileStream);
-                //}
-
                 return true;
             }
             catch
@@ -107,14 +98,6 @@ namespace NETCore.Basic.Util.Helper
 
         public byte[] ByteArrayFromFile(Stream stream)
         {
-            //MemoryStream ms = new MemoryStream();
-
-            //var tempStream = stream as MemoryStream;
-            //var byteArray = tempStream.ToArray();
-            //ms.Write(byteArray, 0, byteArray.Length);
-
-            //return ms.ToArray();
-
             using (MemoryStream file = new MemoryStream())
             {
                 stream.CopyTo(file);

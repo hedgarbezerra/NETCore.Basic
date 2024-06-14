@@ -13,10 +13,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NETCore.Basic.API.Configurations.Formatters;
 using NETCore.Basic.Util.Configuration;
 using NETCore.Basic.Util.Crypto;
 using Newtonsoft.Json;
-using Serilog;
 using System;
 using System.IO;
 using System.Text;
@@ -45,12 +45,18 @@ namespace NETCore.Basic.API
 
             services.AddDirectoryBrowser();
 
-            services.AddControllers()
+            services.AddControllers(op =>
+            {
+                op.RespectBrowserAcceptHeader = true;
+                op.ReturnHttpNotAcceptable = true;
+                op.OutputFormatters.Add(new CsvFormatter());
+            })
+                .AddXmlSerializerFormatters()
                 .AddJsonOptions(ops =>
                 {
+                    ops.JsonSerializerOptions.PropertyNamingPolicy = null;
                     ops.JsonSerializerOptions.IgnoreReadOnlyProperties = false;
                     ops.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    ops.JsonSerializerOptions.IgnoreNullValues = false;
                     ops.JsonSerializerOptions.WriteIndented = true;
                     ops.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     ops.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
@@ -164,17 +170,22 @@ namespace NETCore.Basic.API
             #endregion
 
             #region Setting up Azure Keyvault
-
-            if (env.IsProduction())
+            #region Configura Azure App Configurations
+            var appConfigurationsConnectionString = Configuration.GetConnectionString("AppConfig");
+            Configuration.AddAzureAppConfiguration((config) =>
             {
-                var sp = app.ApplicationServices;
-                var azureSettings = new AzureSettings(Configuration, sp.GetService<IEncryption>());
-                var builder = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", false, true)
-                   .AddAzureKeyVault(new AzureKeyVaultConfigurationOptions(azureSettings.KeyVaultURI, azureSettings.KeyVaultClientId, azureSettings.KeyVaultKey));
+                config.Connect(appConfigurationsConnectionString)
+                    .ConfigureRefresh(opt =>
+                    {
+                        opt.Register(AppConfiguration.AZURE_CONFIG_CACHE_SENTINEL, true);
+                        opt.SetCacheExpiration(AppConfiguration.AZURE_CONFIG_CACHE_EXPIRACY);
+                    });
 
-                Configuration = builder.Build();
-            }
+                config.Select(KeyFilter.Any, LabelFilter.Null);
+                config.Select(KeyFilter.Any, hostingEnvironment.EnvironmentName);
+            });
+
+            Services.AddAzureAppConfiguration();
             #endregion
 
             #region setting up logging and log browser visualization
